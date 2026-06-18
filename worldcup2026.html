@@ -140,6 +140,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 #goals-popup .gp-goal{font-size:0.75rem;color:#d0e4ff;padding:2px 0;line-height:1.4}
 #goals-popup .gp-goal .min{color:#4a7aaa;font-size:0.68rem;}
 #goals-popup .gp-no-goals{font-size:0.78rem;color:#4a7aaa;text-align:center;padding:4px 0;}
+#goals-popup .gp-team-name{font-size:0.7rem;color:#e8c84a;font-weight:700;letter-spacing:1px;margin-bottom:5px;border-bottom:1px solid #1e3a6e;padding-bottom:3px;}
 .match.played{cursor:pointer;}
 .match.played:hover{background:#0d2040;border-color:#2a4a7a;}
 
@@ -521,13 +522,18 @@ function showGoals(e, gk, mi){
   if(!goals || (!goals.h.length && !goals.a.length)){
     html = '<div class="gp-no-goals">Date indisponibile</div>';
   } else {
+    const grp = GROUPS[gk];
+    const hTeam = grp.teams.find(t=>t.n===m.h);
+    const aTeam = grp.teams.find(t=>t.n===m.a);
     html = '<div class="gp-teams">';
     html += '<div class="gp-col">';
+    html += `<div class="gp-team-name">${hTeam?.f||''} ${m.h}</div>`;
     (goals.h||[]).forEach(g=>{ html+=`<div class="gp-goal">⚽ ${g}</div>`; });
     if(!goals.h.length) html+='<div class="gp-goal" style="color:#3a5a8a">–</div>';
     html += '</div>';
     html += '<div class="gp-col right">';
-    (goals.a||[]).forEach(g=>{ html+=`<div class="gp-goal">${g} ⚽</div>`; });
+    html += `<div class="gp-team-name">${m.a} ${aTeam?.f||''}</div>`;
+    (goals.a||[]).forEach(gr=>{ html+=`<div class="gp-goal">${gr} ⚽</div>`; });
     if(!goals.a.length) html+='<div class="gp-goal" style="color:#3a5a8a">–</div>';
     html += '</div></div>';
   }
