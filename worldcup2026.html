@@ -187,30 +187,30 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 <script>
 // ─── HIGHLIGHT-URI ─────────────────────────────────────────────────────────────
 const HIGHLIGHTS = [
-  {day:'11 iun', stage:'Grupe', m:'Mexic 2–0 Africa de Sud',       id:'4b6gmVcOeXs'},
-  {day:'11 iun', stage:'Grupe', m:'Coreea de Sud 2–1 Rep. Cehă',   id:'aqtNIkh3IfM'},
-  {day:'12 iun', stage:'Grupe', m:'Canada 1–1 Bosnia',              id:'REwD7_HscQw'},
-  {day:'12 iun', stage:'Grupe', m:'SUA 4–1 Paraguay',               id:'PT4Jl6E3SQs'},
-  {day:'13 iun', stage:'Grupe', m:'Qatar 1–1 Elveția',             id:'wnUY6zkCf4s'},
-  {day:'13 iun', stage:'Grupe', m:'Brazilia 1–1 Maroc',             id:'ukwtURvu9Ss'},
-  {day:'13 iun', stage:'Grupe', m:'Haiti 0–1 Scoția',              id:'RPaoKMInDMY'},
-  {day:'13 iun', stage:'Grupe', m:'Australia 2–0 Turcia',           id:'YZ067ejw3Wg'},
-  {day:'14 iun', stage:'Grupe', m:'Germania 7–1 Curaçao',          id:'wKZ5v9wYx7k'},
-  {day:'14 iun', stage:'Grupe', m:'Coasta de Fildeș 1–0 Ecuador', id:'BbvTCmH73rg'},
-  {day:'14 iun', stage:'Grupe', m:'Olanda 2–2 Japonia',             id:'r8SvHZxALQs'},
-  {day:'14 iun', stage:'Grupe', m:'Suedia 5–1 Tunisia',             id:'MMkCSg0sncE'},
-  {day:'15 iun', stage:'Grupe', m:'Spania 0–0 Capul Verde',         id:'W9Z4ER9oX0k'},
-  {day:'15 iun', stage:'Grupe', m:'Arabia Saudită 1–1 Uruguay',    id:'omVQ8vM_jqs'},
-  {day:'15 iun', stage:'Grupe', m:'Belgia 1–1 Egipt',               id:'IGNVKhd4BVY'},
-  {day:'16 iun', stage:'Grupe', m:'Iran 2–2 Noua Zeelandă',        id:'U2do417QqZA'},
-  {day:'16 iun', stage:'Grupe', m:'Franța 3–1 Senegal',            id:'QAV002seP2Y'},
-  {day:'16 iun', stage:'Grupe', m:'Norvegia 4–1 Irak',              id:'ANoY9ZK1ZQI'},
-  {day:'16 iun', stage:'Grupe', m:'Argentina 3–0 Algeria',          id:'U7vTDfXFnYQ'},
-  {day:'16 iun', stage:'Grupe', m:'Austria 3–1 Iordania',           id:'KpmFIXcFNUY'},
-  {day:'17 iun', stage:'Grupe', m:'Portugalia 1–1 R.D. Congo',      id:'tSiz4BIeOU4'},
-  {day:'17 iun', stage:'Grupe', m:'Columbia 3–1 Uzbekistan',        id:'Tiwssb_DAEY'},
-  {day:'17 iun', stage:'Grupe', m:'Anglia 4–2 Croația',             id:'xP0HwqdX-dI'},
-  {day:'17 iun', stage:'Grupe', m:'Ghana 1–0 Panama',               id:'AOeTNsG-lF0'},
+  {day:'11 iun', stage:'Grupe', group:'A', m:'Mexic 2–0 Africa de Sud',       id:'4b6gmVcOeXs'},
+  {day:'11 iun', stage:'Grupe', group:'A', m:'Coreea de Sud 2–1 Rep. Cehă',   id:'aqtNIkh3IfM'},
+  {day:'12 iun', stage:'Grupe', group:'B', m:'Canada 1–1 Bosnia',              id:'REwD7_HscQw'},
+  {day:'13 iun', stage:'Grupe', group:'B', m:'Qatar 1–1 Elveția',             id:'wnUY6zkCf4s'},
+  {day:'12 iun', stage:'Grupe', group:'D', m:'SUA 4–1 Paraguay',               id:'PT4Jl6E3SQs'},
+  {day:'13 iun', stage:'Grupe', group:'C', m:'Brazilia 1–1 Maroc',             id:'ukwtURvu9Ss'},
+  {day:'13 iun', stage:'Grupe', group:'C', m:'Haiti 0–1 Scoția',              id:'RPaoKMInDMY'},
+  {day:'13 iun', stage:'Grupe', group:'D', m:'Australia 2–0 Turcia',           id:'YZ067ejw3Wg'},
+  {day:'14 iun', stage:'Grupe', group:'E', m:'Germania 7–1 Curaçao',          id:'wKZ5v9wYx7k'},
+  {day:'14 iun', stage:'Grupe', group:'E', m:'Coasta de Fildeș 1–0 Ecuador', id:'BbvTCmH73rg'},
+  {day:'14 iun', stage:'Grupe', group:'F', m:'Olanda 2–2 Japonia',             id:'r8SvHZxALQs'},
+  {day:'14 iun', stage:'Grupe', group:'F', m:'Suedia 5–1 Tunisia',             id:'MMkCSg0sncE'},
+  {day:'15 iun', stage:'Grupe', group:'H', m:'Spania 0–0 Capul Verde',         id:'W9Z4ER9oX0k'},
+  {day:'15 iun', stage:'Grupe', group:'H', m:'Arabia Saudită 1–1 Uruguay',    id:'omVQ8vM_jqs'},
+  {day:'15 iun', stage:'Grupe', group:'G', m:'Belgia 1–1 Egipt',               id:'IGNVKhd4BVY'},
+  {day:'16 iun', stage:'Grupe', group:'G', m:'Iran 2–2 Noua Zeelandă',        id:'U2do417QqZA'},
+  {day:'16 iun', stage:'Grupe', group:'I', m:'Franța 3–1 Senegal',            id:'QAV002seP2Y'},
+  {day:'16 iun', stage:'Grupe', group:'I', m:'Norvegia 4–1 Irak',              id:'ANoY9ZK1ZQI'},
+  {day:'16 iun', stage:'Grupe', group:'J', m:'Argentina 3–0 Algeria',          id:'U7vTDfXFnYQ'},
+  {day:'16 iun', stage:'Grupe', group:'J', m:'Austria 3–1 Iordania',           id:'KpmFIXcFNUY'},
+  {day:'17 iun', stage:'Grupe', group:'K', m:'Portugalia 1–1 R.D. Congo',      id:'tSiz4BIeOU4'},
+  {day:'17 iun', stage:'Grupe', group:'K', m:'Columbia 3–1 Uzbekistan',        id:'Tiwssb_DAEY'},
+  {day:'17 iun', stage:'Grupe', group:'L', m:'Anglia 4–2 Croația',             id:'xP0HwqdX-dI'},
+  {day:'17 iun', stage:'Grupe', group:'L', m:'Ghana 1–0 Panama',               id:'AOeTNsG-lF0'},
   // Optimi, Sferturi, Semifinale, Finală — se adaugă pe măsură ce se joacă
   // {day:'?? iul', stage:'Optimi',     m:'X – Y',  id:'...'},
   // {day:'?? iul', stage:'Sferturi',   m:'X – Y',  id:'...'},
@@ -243,7 +243,7 @@ function vpFilter(){
   list.innerHTML = '';
   const filtered = HIGHLIGHTS.filter(h=>{
     const matchStage = vpActiveDay==='toate' || h.stage===vpActiveDay;
-    const text = h.m.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    const text = (h.m + ' grupa ' + (h.group||'')).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
     const matchQ = !q || text.includes(q);
     return matchStage && matchQ;
   });
