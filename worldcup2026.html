@@ -130,7 +130,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
   background:#0d1e3a;border:1px solid #4a9ae0;border-radius:12px;
   padding:14px 18px;min-width:200px;max-width:280px;
   box-shadow:0 8px 32px rgba(0,0,0,0.7);
-  pointer-events:none;
+  pointer-events:auto;
 }
 #goals-popup .gp-title{font-size:0.72rem;color:#4a9ae0;letter-spacing:2px;margin-bottom:8px}
 #goals-popup .gp-score{font-size:1.2rem;font-weight:700;color:#e8c84a;text-align:center;margin-bottom:8px}
@@ -496,7 +496,7 @@ function renderCard(gk,idx){
   div.className='gcard';div.id='g-'+gk;
   div.style.left=left+'px';div.style.top=top+'px';div.style.width=CARD_W+'px';
   div.innerHTML=`<div class="gcard-head" style="border-top:3px solid ${g.color}"><span class="glabel">GRUPA ${gk}</span><span class="gteams-mini">${miniTeams}</span></div><div class="gcard-body"><table class="standings"><thead><tr><th class="left">Echipă</th><th>J</th><th>V</th><th>E</th><th>Î</th><th>GM</th><th>GP</th><th>Pct</th></tr></thead><tbody>${rows}</tbody></table><div class="matches-title">MECIURI</div>${mrows}</div>`;
-  div.onclick=()=>zoomTo(idx);
+  div.onclick=(e)=>{ if(e.target.closest('.match.played')) return; zoomTo(idx); };
   world.appendChild(div);
 }
 
@@ -539,12 +539,11 @@ function showGoals(e, gk, mi){
   popup.style.left = px + 'px';
   popup.style.top = py + 'px';
   popup.style.display = 'block';
-
-  clearTimeout(popupTimeout);
-  popupTimeout = setTimeout(()=>popup.style.display='none', 4000);
 }
 
-document.addEventListener('click', ()=>{ popup.style.display='none'; });
+document.addEventListener('click', (e)=>{
+  if(!popup.contains(e.target)) popup.style.display='none';
+});
 
 // ─── ZOOM ─────────────────────────────────────────────────────────────────────
 let currentIdx=-1, _tx=0, _ty=0, _sc=1;
