@@ -156,18 +156,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 <body>
 
 <div id="header">
-  <h1><svg viewBox="0 0 60 80" height="38" style="vertical-align:middle;margin-right:8px" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="30" cy="12" r="10" fill="#c8a830" stroke="#e8c84a" stroke-width="1"/>
-    <ellipse cx="30" cy="12" rx="5" ry="10" fill="none" stroke="#e8c84a" stroke-width="0.8" opacity="0.6"/>
-    <line x1="20" y1="12" x2="40" y2="12" stroke="#e8c84a" stroke-width="0.8" opacity="0.6"/>
-    <path d="M30 22 Q20 26 16 32 Q14 36 18 38 Q22 34 26 30 L28 38" fill="#c8a830" stroke="#e8c84a" stroke-width="0.7" stroke-linejoin="round"/>
-    <path d="M30 22 Q40 26 44 32 Q46 36 42 38 Q38 34 34 30 L32 38" fill="#c8a830" stroke="#e8c84a" stroke-width="0.7" stroke-linejoin="round"/>
-    <path d="M26 38 Q24 44 25 50 L35 50 Q36 44 34 38 Z" fill="#c8a830" stroke="#e8c84a" stroke-width="0.7"/>
-    <rect x="26" y="50" width="8" height="4" rx="1" fill="#b89020" stroke="#e8c84a" stroke-width="0.7"/>
-    <rect x="20" y="54" width="20" height="4" rx="2" fill="#2a7a3a" stroke="#3aaa4a" stroke-width="0.7"/>
-    <rect x="17" y="58" width="26" height="5" rx="2" fill="#1a5a2a" stroke="#3aaa4a" stroke-width="0.7"/>
-    <rect x="15" y="63" width="30" height="4" rx="2" fill="#2a7a3a" stroke="#3aaa4a" stroke-width="0.7"/>
-  </svg>WORLD CUP 2026</h1>
+  <h1><img src="cupa.png" height="42" style="vertical-align:middle;margin-right:10px;filter:drop-shadow(0 0 6px #e8c84a88)">WORLD CUP 2026</h1>
   <div class="sub">USA · CANADA · MEXICO &nbsp;|&nbsp; 11 iun – 19 iul 2026</div>
 </div>
 
@@ -237,6 +226,10 @@ const HIGHLIGHTS = [
   {day:'17 iun', stage:'Grupe', group:'K', m:'Columbia 3–1 Uzbekistan',        id:'Tiwssb_DAEY'},
   {day:'17 iun', stage:'Grupe', group:'L', m:'Anglia 4–2 Croația',             id:'xP0HwqdX-dI'},
   {day:'17 iun', stage:'Grupe', group:'L', m:'Ghana 1–0 Panama',               id:'AOeTNsG-lF0'},
+  {day:'18 iun', stage:'Grupe', group:'A', m:'Mexic 1–0 Coreea de Sud',        id:'nKxfFI7qOGY'},
+  {day:'18 iun', stage:'Grupe', group:'A', m:'Cehia 1–1 Africa de Sud',        id:'n4QcPVs2drE'},
+  {day:'18 iun', stage:'Grupe', group:'B', m:'Canada 6–0 Qatar',               id:'YwlimtQvfIk'},
+  {day:'18 iun', stage:'Grupe', group:'B', m:'Elveția 4–1 Bosnia',            id:'BnIzsUhh5L4'},
   // Optimi, Sferturi, Semifinale, Finală — se adaugă pe măsură ce se joacă
   // {day:'?? iul', stage:'Optimi',     m:'X – Y',  id:'...'},
   // {day:'?? iul', stage:'Sferturi',   m:'X – Y',  id:'...'},
@@ -304,8 +297,8 @@ const GROUPS = {
   ], matches:[
     {h:'Mexic',         a:'Africa de Sud',  date:'11 iun', score:[2,0], goals:{h:["Quiñones 9'","Jimenez 67'"],a:[]}},
     {h:'Coreea de Sud', a:'Rep. Cehă',      date:'11 iun', score:[2,1], goals:{h:["I.Hwang 67'","H.Oh 80'"],a:["Krejci 59'"]}},
-    {h:'Mexic',         a:'Coreea de Sud',  date:'18 iun', score:null},
-    {h:'Africa de Sud', a:'Rep. Cehă',      date:'18 iun', score:null},
+    {h:'Mexic',         a:'Coreea de Sud',  date:'18 iun', score:[1,0], goals:{h:["Romo 50'"],a:[]}},
+    {h:'Africa de Sud', a:'Rep. Cehă',      date:'18 iun', score:[1,1], goals:{h:["Mokoena 83'pen"],a:["Sadílek 6'"]}},
     {h:'Mexic',         a:'Rep. Cehă',      date:'26 iun', score:null},
     {h:'Coreea de Sud', a:'Africa de Sud',  date:'26 iun', score:null},
   ]},
@@ -317,8 +310,8 @@ const GROUPS = {
   ], matches:[
     {h:'Canada',   a:'Bosnia',   date:'12 iun', score:[1,1], goals:{h:["Larin 78'"],a:["Lukic 9'"]}},
     {h:'Qatar',    a:'Elveția', date:'13 iun', score:[1,1], goals:{h:["Embolo 17'pen"],a:["Muheim 90+4'csc"]}},
-    {h:'Canada',   a:'Qatar',    date:'17 iun', score:null},
-    {h:'Elveția', a:'Bosnia',   date:'17 iun', score:null},
+    {h:'Canada',   a:'Qatar',    date:'18 iun', score:[6,0], goals:{h:["Larin 16'","David 29'","David 45+3'","Saliba 64'","Manai 75'csc","David 90+2'"],a:[]}},
+    {h:'Elveția', a:'Bosnia',   date:'18 iun', score:[4,1], goals:{h:["Manzambi 71'","Vargas 84'","Manzambi 90'","Xhaka 90+7'pen"],a:["Mahmic 90+3'"]}},
     {h:'Canada',   a:'Elveția', date:'21 iun', score:null},
     {h:'Bosnia',   a:'Qatar',    date:'21 iun', score:null},
   ]},
@@ -330,8 +323,8 @@ const GROUPS = {
   ], matches:[
     {h:'Brazilia', a:'Maroc',   date:'13 iun', score:[1,1], goals:{h:["Vinicius Jr 32'"],a:["Saibari 21'"]}},
     {h:'Haiti',    a:'Scoția', date:'13 iun', score:[0,1], goals:{h:[],a:["McGinn 29'"]}},
-    {h:'Brazilia', a:'Scoția', date:'17 iun', score:null},
-    {h:'Maroc',    a:'Haiti',   date:'17 iun', score:null},
+    {h:'Brazilia', a:'Scoția', date:'19 iun', score:null},
+    {h:'Maroc',    a:'Haiti',   date:'19 iun', score:null},
     {h:'Brazilia', a:'Haiti',   date:'21 iun', score:null},
     {h:'Maroc',    a:'Scoția', date:'21 iun', score:null},
   ]},
@@ -343,8 +336,8 @@ const GROUPS = {
   ], matches:[
     {h:'SUA',       a:'Paraguay',  date:'12 iun', score:[4,1], goals:{h:["Bobadilla 7'csc","Balogun 31'","Balogun 45+5'","Reyna 90+8'"],a:["Mauricio 73'"]}},
     {h:'Australia', a:'Turcia',    date:'13 iun', score:[2,0], goals:{h:["Irankunda 27'","Metcalfe 75'"],a:[]}},
-    {h:'SUA',       a:'Australia', date:'17 iun', score:null},
-    {h:'Turcia',    a:'Paraguay',  date:'17 iun', score:null},
+    {h:'SUA',       a:'Australia', date:'19 iun', score:null},
+    {h:'Turcia',    a:'Paraguay',  date:'19 iun', score:null},
     {h:'SUA',       a:'Turcia',    date:'21 iun', score:null},
     {h:'Australia', a:'Paraguay',  date:'21 iun', score:null},
   ]},
@@ -356,8 +349,8 @@ const GROUPS = {
   ], matches:[
     {h:'Germania',         a:'Curaçao',         date:'14 iun', score:[7,1], goals:{h:["Nmecha 6'","Schlotterbeck 38'","Havertz 45+5'pen","Musiala 47'","Brown 68'","Undav 78'","Havertz 88'"],a:["Comenencia 21'"]}},
     {h:'Coasta de Fildeș',a:'Ecuador',          date:'14 iun', score:[1,0], goals:{h:["Diallo 90'"],a:[]}},
-    {h:'Germania',         a:'Ecuador',          date:'18 iun', score:null},
-    {h:'Curaçao',         a:'Coasta de Fildeș', date:'18 iun', score:null},
+    {h:'Germania',         a:'Ecuador',          date:'20 iun', score:null},
+    {h:'Curaçao',         a:'Coasta de Fildeș', date:'20 iun', score:null},
     {h:'Germania',         a:'Coasta de Fildeș',date:'22 iun', score:null},
     {h:'Ecuador',          a:'Curaçao',         date:'22 iun', score:null},
   ]},
@@ -369,8 +362,8 @@ const GROUPS = {
   ], matches:[
     {h:'Olanda',  a:'Japonia', date:'14 iun', score:[2,2], goals:{h:["Van Dijk 50'","Summerville 64'"],a:["Nakamura 57'","Kamada 88'"]}},
     {h:'Suedia',  a:'Tunisia', date:'14 iun', score:[5,1], goals:{h:["Ayari 7'","Isak 30'","Gyokeres 59'","Svanberg 86'","Ayari 90+6'"],a:["Rekik 43'"]}},
-    {h:'Olanda',  a:'Suedia',  date:'18 iun', score:null},
-    {h:'Japonia', a:'Tunisia', date:'18 iun', score:null},
+    {h:'Olanda',  a:'Suedia',  date:'20 iun', score:null},
+    {h:'Japonia', a:'Tunisia', date:'20 iun', score:null},
     {h:'Olanda',  a:'Tunisia', date:'22 iun', score:null},
     {h:'Japonia', a:'Suedia',  date:'22 iun', score:null},
   ]},
