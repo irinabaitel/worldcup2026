@@ -1,0 +1,13 @@
+﻿# scripturi locale de automatizare (NU se publica - contin token API)
+update_worldcup.py
+fetch_*.py
+find_*.py
+diag*.py
+antena_*.py
+fix_dates.py
+extract_frames.py
+validate.js
+syncheck.js
+schedule_raw.json
+schedule_compact.json
+frames/
