@@ -11,3 +11,4 @@ syncheck.js
 schedule_raw.json
 schedule_compact.json
 frames/
+make_favicon.py
