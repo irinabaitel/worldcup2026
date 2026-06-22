@@ -489,7 +489,14 @@ function renderCard(gk,idx){
   const left=PAD+col*(CARD_W+GAP_X), top=PAD+row*(CARD_H+GAP_Y);
   const st=calcStandings(gk);
   const rows=st.map((t,i)=>`<tr class="${i<2?'qualified':''}"><td class="team-cell"><span class="flag">${t.f}</span>${t.n}</td><td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td>${t.gf}</td><td>${t.ga}</td><td class="pts-cell">${t.pts}</td></tr>`).join('');
-  const mrows=g.matches.map((m,mi)=>{
+  const monthIdx={ian:1,feb:2,mar:3,apr:4,mai:5,iun:6,iul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+  const dateKey=d=>{ if(!d) return 9999; const p=d.split(' '); return (monthIdx[p[1]]||99)*100+(parseInt(p[0])||0); };
+  // jucate primele (cronologic), nejucate la final (in ordinea in care se vor juca)
+  const ordered=g.matches.map((m,mi)=>({m,mi})).sort((x,y)=>{
+    const px=Array.isArray(x.m.score)?0:1, py=Array.isArray(y.m.score)?0:1;
+    return px!==py ? px-py : dateKey(x.m.date)-dateKey(y.m.date);
+  });
+  const mrows=ordered.map(({m,mi})=>{
     let sc,cls;
     if(Array.isArray(m.score)){sc=`${m.score[0]}–${m.score[1]}`;cls='played';}
     else if(m.score==='azi'){sc='azi';cls='today';}
