@@ -173,6 +173,20 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .ko-row.win .ko-team{color:#4acfa0;font-weight:700;}
 .ko-final-col{justify-content:center;gap:16px;}
 .ko-cup{text-align:center;font-size:1.8rem;margin-top:10px;filter:drop-shadow(0 0 8px #e8c84a88);}
+/* carduri tot mai frumoase spre finala */
+.ko-t2{border-color:#27508a;}
+.ko-t3{border-color:#3a6bb0;box-shadow:0 0 9px rgba(74,154,224,0.18);}
+.ko-t4{border-color:#6f9ad8;box-shadow:0 0 15px rgba(120,170,235,0.32);}
+.ko-date{font-size:0.6rem;color:#5a7398;text-align:center;margin-top:3px;letter-spacing:0.5px;}
+.ko-match.ko-played{cursor:pointer;}
+.ko-match.ko-played:hover{filter:brightness(1.28);}
+.ko-final-wrap{display:flex;flex-direction:column;align-items:center;gap:7px;}
+.ko-final-wrap img{width:48px;filter:drop-shadow(0 0 11px #e8c84abb);}
+.ko-big{border:2px solid #e8c84a !important;box-shadow:0 0 24px rgba(232,200,74,0.5) !important;min-width:172px;padding:8px 12px;background:linear-gradient(135deg,#1a2545,#0c1730) !important;}
+.ko-big .ko-row{font-size:0.85rem;padding:3px 0;}
+.ko-big .ko-sc{color:#ffd84a;}
+.ko-final-label{font-size:0.56rem;color:#7a6a3a;letter-spacing:1px;text-transform:uppercase;margin-top:8px;}
+.ko-small-final{opacity:0.78;min-width:150px;}
 </style>
 </head>
 <body>
@@ -331,44 +345,81 @@ vpFilter();
 const KNOCKOUT = {
   'Șaisprezecimi':[], 'Optimi':[], 'Sferturi':[], 'Semifinale':[], 'Finala':[], 'Finala mică':[]
 };
+// rundele care se deseneaza ca si coloane normale (finala = coloana speciala)
 const KO_STRUCTURE = [
   {key:'Șaisprezecimi', n:16},
   {key:'Optimi',        n:8},
   {key:'Sferturi',      n:4},
   {key:'Semifinale',    n:2},
-  {key:'Finala',        n:1},
 ];
 
-function koCard(m){
+function koCard(m, opts){
+  opts = opts || {};
+  const extra = ' ko-t'+(opts.tier||1) + (opts.big?' ko-big':'') + (opts.small?' ko-small-final':'');
   if(!m || (!m.h && !m.a)){
-    return '<div class="ko-match empty"><div class="ko-row"><span class="ko-team">?</span><span class="ko-sc"></span></div><div class="ko-row"><span class="ko-team">?</span><span class="ko-sc"></span></div></div>';
+    return `<div class="ko-match empty${extra}"><div class="ko-row"><span class="ko-team">?</span><span class="ko-sc"></span></div><div class="ko-row"><span class="ko-team">?</span><span class="ko-sc"></span></div></div>`;
   }
   const played = Array.isArray(m.score);
   const hw = played && m.score[0]>m.score[1] ? ' win' : '';
   const aw = played && m.score[1]>m.score[0] ? ' win' : '';
   const s0 = played ? m.score[0] : '';
   const s1 = played ? m.score[1] : '';
-  return `<div class="ko-match">`
+  const foot = (!played && m.date) ? `<div class="ko-date">${m.date}</div>` : '';
+  const click = (played && opts.key!=null) ? ` onclick="showKoGoals(event,'${opts.key}',${opts.idx})" title="Click pentru marcatori"` : '';
+  const pc = played ? ' ko-played' : '';
+  return `<div class="ko-match${extra}${pc}"${click}>`
     + `<div class="ko-row${hw}"><span class="ko-team">${m.hf||''} ${m.h||'?'}</span><span class="ko-sc">${s0}</span></div>`
     + `<div class="ko-row${aw}"><span class="ko-team">${m.af||''} ${m.a||'?'}</span><span class="ko-sc">${s1}</span></div>`
-    + `</div>`;
+    + foot + `</div>`;
 }
 
 function renderBracket(){
   let html = '<div class="bracket-wrap">';
-  KO_STRUCTURE.forEach(r=>{
+  KO_STRUCTURE.forEach((r,ri)=>{
     const real = KNOCKOUT[r.key] || [];
     const arr = real.length ? real : Array.from({length:r.n}, ()=>null);
-    html += `<div class="ko-round"><div class="ko-round-title">${r.key}</div><div class="ko-matches${r.n===1?' ko-final-col':''}">`;
-    arr.forEach(m=>{ html += koCard(m); });
-    if(r.n===1) html += '<div class="ko-cup">🏆</div>';
+    html += `<div class="ko-round"><div class="ko-round-title">${r.key}</div><div class="ko-matches">`;
+    arr.forEach((m,i)=>{ html += koCard(m, {key:r.key, idx:i, tier:ri+1}); });
     html += `</div></div>`;
   });
-  // Finala mica (locul 3)
-  const fm = (KNOCKOUT['Finala mică']||[])[0] || null;
-  html += `<div class="ko-round"><div class="ko-round-title">Finala mică</div><div class="ko-matches ko-final-col">${koCard(fm)}</div></div>`;
+  // Coloana finala: cupa reala + finala mare evidentiata + finala mica discreta
+  const finalM = (KNOCKOUT['Finala']||[])[0] || null;
+  const thirdM = (KNOCKOUT['Finala mică']||[])[0] || null;
+  html += '<div class="ko-round"><div class="ko-round-title">Finala</div><div class="ko-matches ko-final-col"><div class="ko-final-wrap">';
+  html += '<img src="cupa.png" alt="Cupa Mondială">';
+  html += koCard(finalM, {big:true, key:'Finala', idx:0});
+  html += '<div class="ko-final-label">Finala mică · loc 3</div>';
+  html += koCard(thirdM, {small:true, key:'Finala mică', idx:0});
+  html += '</div></div></div>';
   html += '</div>';
   document.getElementById('bracket').innerHTML = html;
+}
+
+function showKoGoals(e, key, idx){
+  e.stopPropagation();
+  const m = (KNOCKOUT[key]||[])[idx];
+  if(!m || !Array.isArray(m.score)) return;
+  const pop = document.getElementById('goals-popup');
+  document.getElementById('gp-score').textContent = `${m.h} ${m.score[0]}–${m.score[1]} ${m.a}`;
+  const gh = (m.goals&&m.goals.h)||[], ga = (m.goals&&m.goals.a)||[];
+  let html;
+  if(!gh.length && !ga.length){
+    html = '<div class="gp-no-goals">Date indisponibile</div>';
+  } else {
+    html = '<div class="gp-teams"><div class="gp-col">';
+    html += `<div class="gp-team-name">${m.hf||''} ${m.h}</div>`;
+    gh.forEach(g=>{ html+=`<div class="gp-goal">⚽ ${g}</div>`; });
+    if(!gh.length) html+='<div class="gp-goal" style="color:#3a5a8a">–</div>';
+    html += '</div><div class="gp-col right">';
+    html += `<div class="gp-team-name">${m.a} ${m.af||''}</div>`;
+    ga.forEach(gr=>{ html+=`<div class="gp-goal">${gr} ⚽</div>`; });
+    if(!ga.length) html+='<div class="gp-goal" style="color:#3a5a8a">–</div>';
+    html += '</div></div>';
+  }
+  document.getElementById('gp-teams').innerHTML = html;
+  pop.style.left = Math.min(e.clientX+10, window.innerWidth-300)+'px';
+  pop.style.top = Math.min(e.clientY-10, window.innerHeight-200)+'px';
+  pop.style.display = 'block';
 }
 
 function toggleBracket(){
@@ -656,6 +707,7 @@ function fitAll(){
   applyTransform((vw-worldW*sc)/2,(vh-worldH*sc)/2,sc,true);
 }
 function zoomTo(idx){
+  exitBracket();
   const gk=GKEYS[idx], col=idx%COLS, row=Math.floor(idx/COLS);
   const cx=PAD+col*(CARD_W+GAP_X)+CARD_W/2, cy=PAD+row*(CARD_H+GAP_Y)+CARD_H/2;
   const vw=vp.clientWidth, vh=vp.clientHeight;
@@ -666,7 +718,15 @@ function zoomTo(idx){
   currentIdx=idx;
   document.getElementById('groupLabel').textContent='GRUPA '+gk;
 }
+function exitBracket(){
+  const v=document.getElementById('viewport');
+  if(v.classList.contains('show-bracket')){
+    v.classList.remove('show-bracket');
+    document.getElementById('koBtn').textContent='🏆 Eliminatorii';
+  }
+}
 function zoomOut(){
+  exitBracket();
   document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('zoomed'));
   currentIdx=-1;document.getElementById('groupLabel').textContent='';fitAll();
 }
