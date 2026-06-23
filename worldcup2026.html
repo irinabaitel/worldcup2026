@@ -153,7 +153,26 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 #updateCmd{background:#071020;border:1px dashed #2a6a2a;border-radius:8px;padding:12px 20px;font-size:1rem;color:#4acf4a;cursor:pointer;letter-spacing:0.5px;transition:background 0.2s;}
 #updateCmd:hover{background:#0d2a0d}
 #copyMsg{color:#4acf4a;font-size:0.78rem;height:20px;margin-top:6px;opacity:0;transition:opacity 0.3s}
-</style>
+
+/* ── BRACKET ELIMINATORII ── */
+#bracket{position:absolute;inset:0;background:#080f1e;overflow:auto;display:none;padding:18px 14px;z-index:5;}
+#viewport.show-bracket #world{display:none;}
+#viewport.show-bracket #bracket{display:flex;align-items:center;justify-content:center;}
+.bracket-wrap{display:flex;gap:14px;min-width:max-content;min-height:100%;align-items:stretch;padding:10px;}
+.ko-round{display:flex;flex-direction:column;min-width:158px;}
+.ko-round-title{font-size:0.66rem;color:#e8c84a;letter-spacing:1.5px;text-align:center;margin-bottom:10px;text-transform:uppercase;font-weight:700;}
+.ko-matches{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:6px;}
+.ko-match{background:linear-gradient(135deg,#0d1e3a,#0a1628);border:1px solid #1e3a6e;border-radius:8px;padding:5px 8px;position:relative;}
+.ko-match::after{content:'';position:absolute;right:-14px;top:50%;width:14px;height:1px;background:#2a4a7a;}
+.ko-round:last-child .ko-match::after{display:none;}
+.ko-match.empty{opacity:0.45;border-style:dashed;}
+.ko-row{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:2px 0;font-size:0.74rem;color:#cde0fb;}
+.ko-row+.ko-row{border-top:1px solid #14233f;}
+.ko-team{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ko-sc{color:#e8c84a;font-weight:700;flex-shrink:0;min-width:14px;text-align:right;}
+.ko-row.win .ko-team{color:#4acfa0;font-weight:700;}
+.ko-final-col{justify-content:center;gap:16px;}
+.ko-cup{text-align:center;font-size:1.8rem;margin-top:10px;filter:drop-shadow(0 0 8px #e8c84a88);}
 </head>
 <body>
 
@@ -163,7 +182,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 </div>
 
 <div id="main">
-  <div id="viewport"><div id="world"></div></div>
+  <div id="viewport"><div id="world"></div><div id="bracket"></div></div>
 
   <div id="videopanel">
     <div id="vp-header">
@@ -176,6 +195,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 </div>
 
 <div id="nav">
+  <button class="btn" id="koBtn" onclick="toggleBracket()" style="border-color:#6a5a2a;color:#e8c84a">🏆 Eliminatorii</button>
   <button class="btn" onclick="zoomOut()">⊙ Toate grupele</button>
   <button class="btn" onclick="prevGroup()">◀ Înapoi</button>
   <span id="groupLabel"></span>
@@ -258,7 +278,7 @@ let vpActiveDay = 'toate';
 let vpActiveId = null;
 
 // Build stage filter buttons
-const STAGES = ['Toate', 'Grupe', 'Optimi', 'Sferturi', 'Semifinale', 'Finală'];
+const STAGES = ['Toate', 'Grupe', 'Șaisprezecimi', 'Optimi', 'Sferturi', 'Semifinale', 'Finala mică', 'Finala'];
 (function(){
   const cont = document.getElementById('vp-days');
   STAGES.forEach(s=>{
@@ -303,6 +323,59 @@ function vpPlay(id){
 }
 
 vpFilter();
+
+// ─── FAZA ELIMINATORIE (BRACKET) ──────────────────────────────────────────────
+// KNOCKOUT e completat automat de update_worldcup.py din API (echipe + scor pe
+// masura ce se stabilesc). Gol acum = se afiseaza casute "?" cu forma arborelui.
+const KNOCKOUT = {
+  'Șaisprezecimi':[], 'Optimi':[], 'Sferturi':[], 'Semifinale':[], 'Finala':[], 'Finala mică':[]
+};
+const KO_STRUCTURE = [
+  {key:'Șaisprezecimi', n:16},
+  {key:'Optimi',        n:8},
+  {key:'Sferturi',      n:4},
+  {key:'Semifinale',    n:2},
+  {key:'Finala',        n:1},
+];
+
+function koCard(m){
+  if(!m || (!m.h && !m.a)){
+    return '<div class="ko-match empty"><div class="ko-row"><span class="ko-team">?</span><span class="ko-sc"></span></div><div class="ko-row"><span class="ko-team">?</span><span class="ko-sc"></span></div></div>';
+  }
+  const played = Array.isArray(m.score);
+  const hw = played && m.score[0]>m.score[1] ? ' win' : '';
+  const aw = played && m.score[1]>m.score[0] ? ' win' : '';
+  const s0 = played ? m.score[0] : '';
+  const s1 = played ? m.score[1] : '';
+  return `<div class="ko-match">`
+    + `<div class="ko-row${hw}"><span class="ko-team">${m.hf||''} ${m.h||'?'}</span><span class="ko-sc">${s0}</span></div>`
+    + `<div class="ko-row${aw}"><span class="ko-team">${m.af||''} ${m.a||'?'}</span><span class="ko-sc">${s1}</span></div>`
+    + `</div>`;
+}
+
+function renderBracket(){
+  let html = '<div class="bracket-wrap">';
+  KO_STRUCTURE.forEach(r=>{
+    const real = KNOCKOUT[r.key] || [];
+    const arr = real.length ? real : Array.from({length:r.n}, ()=>null);
+    html += `<div class="ko-round"><div class="ko-round-title">${r.key}</div><div class="ko-matches${r.n===1?' ko-final-col':''}">`;
+    arr.forEach(m=>{ html += koCard(m); });
+    if(r.n===1) html += '<div class="ko-cup">🏆</div>';
+    html += `</div></div>`;
+  });
+  // Finala mica (locul 3)
+  const fm = (KNOCKOUT['Finala mică']||[])[0] || null;
+  html += `<div class="ko-round"><div class="ko-round-title">Finala mică</div><div class="ko-matches ko-final-col">${koCard(fm)}</div></div>`;
+  html += '</div>';
+  document.getElementById('bracket').innerHTML = html;
+}
+
+function toggleBracket(){
+  const vp = document.getElementById('viewport');
+  const on = vp.classList.toggle('show-bracket');
+  document.getElementById('koBtn').textContent = on ? '⊙ Înapoi la grupe' : '🏆 Eliminatorii';
+  if(on) renderBracket();
+}
 
 // ─── DATE GRUPE ───────────────────────────────────────────────────────────────
 const GROUPS = {
