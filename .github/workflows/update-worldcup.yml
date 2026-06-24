@@ -1,0 +1,39 @@
+name: Update World Cup
+
+# Ruleaza in cloud-ul GitHub, NU pe laptopul Irinei.
+on:
+  schedule:
+    - cron: '0 */2 * * *'      # la fiecare 2 ore, non-stop
+  workflow_dispatch:           # buton de rulare manuala (din tab-ul Actions)
+
+permissions:
+  contents: write              # ca sa poata face commit/push
+  pages: write                 # ca sa poata reconstrui pagina
+
+concurrency:
+  group: update-worldcup
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instaleaza dependinte
+        run: pip install requests
+
+      - name: Configureaza git
+        run: |
+          git config user.name "WorldCup Bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Actualizeaza scorurile
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python update_worldcup.py

@@ -1,14 +1,21 @@
-﻿# scripturi locale de automatizare (NU se publica - contin token API)
-update_worldcup.py
+# scripturi/fisiere locale de lucru (NU se publica)
+# update_worldcup.py se publica acum (token-ul vine din Secret, nu din cod)
 fetch_*.py
 find_*.py
 diag*.py
+check_*.py
+fix_*.py
 antena_*.py
-fix_dates.py
 extract_frames.py
+make_favicon.py
+descarca_highlights.py
 validate.js
 syncheck.js
+load_test.js
+test_*.js
 schedule_raw.json
 schedule_compact.json
 frames/
-make_favicon.py
+highlights/
+node_modules/
+plati_sah.html
