@@ -152,7 +152,9 @@ def _oembed(vid):
 
 
 def search_youtube(home, away, hg, ag):
-    """Cauta rezumatul de pe canalul AntenaPLAY, format landscape (exclude Shorts verticale)."""
+    """Cauta rezumatul de pe canalul AntenaPLAY. Citeste canalul DIRECT din pagina de
+    cautare (oEmbed da 401 pe clipurile cu embed dezactivat - multe la AntenaPLAY - si
+    asa pierdeam clipuri valide). Filtrul de durata exclude Shorts-urile verticale."""
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
     query = f'Rezumat {home} {away} {hg}-{ag} Campionatul Mondial 2026'
     # sp=EgIYAw... = filtru durata 4-20 min -> exclude Shorts-urile verticale
@@ -162,18 +164,17 @@ def search_youtube(home, away, hg, ag):
     except Exception as e:
         print(f'  YouTube search error: {e}')
         return None
-    ids = []
-    for b in r.text.split('"videoRenderer"')[1:]:
-        m = re.search(r'"videoId":"([a-zA-Z0-9_-]{11})"', b)
-        if m and m.group(1) not in ids:
-            ids.append(m.group(1))
-    for vid in ids[:8]:
-        author, w, h, title = _oembed(vid)
-        if author == 'AntenaPLAY' and w and h and w >= h:
-            tl = title.lower()
-            if home.lower() in tl or away.lower() in tl:
-                return vid          # doar AntenaPLAY landscape, meci corect
-    return None                     # mai bine niciun clip decat unul gresit/vertical
+    for b in r.text.split('"videoRenderer"')[1:9]:
+        mid = re.search(r'"videoId":"([a-zA-Z0-9_-]{11})"', b)
+        ch = re.search(r'"(?:ownerText|longBylineText)":\{"runs":\[\{"text":"([^"]+)"', b)
+        ti = re.search(r'"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"', b)
+        if not mid:
+            continue
+        channel = ch.group(1) if ch else ''
+        title = (ti.group(1) if ti else '').lower()
+        if channel == 'AntenaPLAY' and (home.lower() in title or away.lower() in title):
+            return mid.group(1)     # AntenaPLAY, meci corect (landscape via filtrul de durata)
+    return None                     # mai bine niciun clip decat unul gresit
 
 
 def add_highlight(html, m, vid):
