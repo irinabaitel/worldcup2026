@@ -171,7 +171,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .bracket-wrap{display:flex;min-width:max-content;min-height:100%;padding:6px 0;}
 .ko-round{display:flex;flex-direction:column;min-width:172px;}
 .ko-round:not(:last-child){margin-right:30px;}
-.ko-round-title{font-size:0.66rem;color:#e8c84a;letter-spacing:1.5px;text-align:center;margin-bottom:10px;text-transform:uppercase;font-weight:700;flex-shrink:0;}
+.ko-round-title{font-size:0.66rem;color:#e8c84a;letter-spacing:1.2px;text-align:center;margin-bottom:10px;text-transform:uppercase;font-weight:700;flex-shrink:0;white-space:nowrap;}
 .ko-cells{flex:1;display:flex;flex-direction:column;}
 .ko-cell{flex:1;display:flex;align-items:center;position:relative;}
 .ko-cell>.ko-match{width:100%;}
@@ -189,10 +189,15 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .ko-date{font-size:0.6rem;color:#5a7398;text-align:center;margin-top:3px;letter-spacing:0.5px;}
 .ko-match.ko-played{cursor:pointer;}
 .ko-match.ko-played:hover{filter:brightness(1.28);}
-/* carduri tot mai frumoase spre finala */
-.ko-t2{border-color:#27508a;}
-.ko-t3{border-color:#3a6bb0;box-shadow:0 0 9px rgba(74,154,224,0.18);}
-.ko-t4{border-color:#6f9ad8;box-shadow:0 0 15px rgba(120,170,235,0.32);}
+/* diferentiere prin CULOARE pe runde (border card + titlu) */
+.ko-t1{border-color:#3a6aa8;}
+.ko-t2{border-color:#2aa0a0;box-shadow:0 0 8px rgba(42,185,185,0.22);}
+.ko-t3{border-color:#3ac070;box-shadow:0 0 11px rgba(60,200,120,0.30);}
+.ko-t4{border-color:#e0922a;box-shadow:0 0 15px rgba(230,150,40,0.38);}
+.bracket-wrap>.ko-round:nth-child(1) .ko-round-title{color:#5a9ad8;}
+.bracket-wrap>.ko-round:nth-child(2) .ko-round-title{color:#3ad0d0;}
+.bracket-wrap>.ko-round:nth-child(3) .ko-round-title{color:#4ad888;}
+.bracket-wrap>.ko-round:nth-child(4) .ko-round-title{color:#f0a850;}
 /* ── finala: mare, decalata la dreapta, cu cupa langa ea; loc 3 discret jos-stanga ── */
 .ko-final-round{position:relative;justify-content:center;}
 .ko-final-cell{display:flex;align-items:center;gap:12px;}
@@ -202,8 +207,10 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .ko-big .ko-row{font-size:0.85rem;padding:3px 0;}
 .ko-big .ko-sc{color:#ffd84a;}
 .ko-third{position:absolute;bottom:10px;left:4px;}
-.ko-final-label{font-size:0.56rem;color:#7a6a3a;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;text-align:center;}
-.ko-small-final{opacity:0.8;min-width:150px;}
+.ko-third-row{display:flex;align-items:center;gap:8px;}
+.ko-final-label{font-size:0.56rem;color:#9aa0ae;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;text-align:center;}
+.ko-small-final{min-width:150px;border:2px solid #c8ccd6 !important;box-shadow:0 0 13px rgba(200,205,220,0.45) !important;background:linear-gradient(135deg,#1a2230,#0c1424) !important;}
+.ko-medal{font-size:1.5rem;flex-shrink:0;filter:drop-shadow(0 0 6px rgba(200,205,220,0.55));}
 /* ── optimizare telefon ── */
 @media(max-width:760px){
   #bracket{padding:12px;}
@@ -466,7 +473,7 @@ function renderBracket(){
   html += '<img class="ko-cup-img" src="cupa.png" alt="Cupa Mondială">';
   html += '</div></div>';
   html += '<div class="ko-third"><div class="ko-final-label">Finala mică · loc 3</div>';
-  html += koCard(thirdM, {small:true, key:'Finala mică', idx:0});
+  html += '<div class="ko-third-row">' + koCard(thirdM, {small:true, key:'Finala mică', idx:0}) + '<span class="ko-medal">🥉</span></div>';
   html += '</div></div>';
   document.getElementById('bracket').innerHTML = html;
 }
