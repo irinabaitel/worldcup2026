@@ -1,6 +1,7 @@
 # scripturi/fisiere locale de lucru (NU se publica)
 # update_worldcup.py se publica acum (token-ul vine din Secret, nu din cod)
 fetch_*.py
+!fetch_goals_wiki.py
 find_*.py
 diag*.py
 check_*.py
