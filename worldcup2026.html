@@ -76,6 +76,16 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 #vp-list::-webkit-scrollbar{width:4px}
 #vp-list::-webkit-scrollbar-thumb{background:#1e3a6e;border-radius:4px}
 #vp-empty{color:#3a5a8a;font-size:0.82rem;text-align:center;padding:24px 0;}
+/* top marcatori */
+#vp-top-btn{width:100%;margin-top:7px;padding:7px;border-radius:8px;background:#0d2a0d;border:1px solid #2a6a2a;color:#4acf4a;cursor:pointer;font-size:0.78rem;letter-spacing:1px;transition:all 0.2s;}
+#vp-top-btn:hover,#vp-top-btn.active{background:#1a4a1a;color:#6aef6a;border-color:#4acf4a;}
+.ts-head{font-size:0.78rem;color:#e8c84a;letter-spacing:2px;text-align:center;padding:6px 0 10px;font-weight:700;}
+.ts-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;margin-bottom:3px;background:#0a1830;border:1px solid #14233f;}
+.ts-row.gold{background:linear-gradient(90deg,#3a2e0a,#0a1830);border-color:#e8c84a;}
+.ts-rank{width:18px;text-align:center;color:#6a8ab5;font-weight:700;font-size:0.78rem;}
+.ts-flag{font-size:1.05rem;}
+.ts-name{flex:1;color:#d0e4ff;font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ts-goals{color:#e8c84a;font-weight:700;font-size:0.9rem;}
 
 .vp-item{
   display:flex;gap:8px;align-items:center;
@@ -220,6 +230,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
       <div class="vp-title">⚽ HIGHLIGHT-URI</div>
       <input id="vp-search" type="text" placeholder="Caută echipă... (ex: Argentina)" oninput="vpFilter()">
       <div id="vp-days"></div>
+      <button id="vp-top-btn" onclick="toggleScorers()">🏆 Top 10 Marcatori</button>
     </div>
     <div id="vp-list"><div id="vp-empty"></div></div>
   </div>
@@ -329,6 +340,7 @@ const STAGES = ['Toate', 'Grupe', 'Șaisprezecimi', 'Optimi', 'Sferturi', 'Semif
 })();
 
 function vpFilter(){
+  const _tb=document.getElementById('vp-top-btn'); if(_tb)_tb.classList.remove('active');
   const q = document.getElementById('vp-search').value.trim().toLowerCase()
     .normalize('NFD').replace(/[̀-ͯ]/g,'');
   const list = document.getElementById('vp-list');
@@ -356,6 +368,48 @@ function vpPlay(id){
   vpActiveId = id;
   window.open(`https://www.youtube.com/watch?v=${id}`, '_blank');
   vpFilter();
+}
+
+// ─── TOP MARCATORI (calculat din datele de goluri -> se auto-actualizeaza) ───
+function _flagOf(team){
+  for(const gr of Object.values(GROUPS)){ const t=gr.teams.find(x=>x.n===team); if(t) return t.f; }
+  return '';
+}
+function computeTopScorers(){
+  const tally = {};
+  const add = (arr, team)=>{
+    (arr||[]).forEach(g=>{
+      if(/csc$/.test(g)) return;                       // autogolul nu se numara
+      const name = g.replace(/\s+\d+(\+\d+)?'(pen)?$/, '').trim();
+      if(!name) return;
+      if(!tally[name]) tally[name] = {g:0, team};
+      tally[name].g++;
+    });
+  };
+  Object.values(GROUPS).forEach(gr => gr.matches.forEach(m=>{
+    if(m.goals){ add(m.goals.h, m.h); add(m.goals.a, m.a); }
+  }));
+  Object.values(KNOCKOUT).forEach(arr => (arr||[]).forEach(m=>{
+    if(m && m.goals){ add(m.goals.h, m.h); add(m.goals.a, m.a); }
+  }));
+  return Object.entries(tally)
+    .map(([name,v]) => ({name, goals:v.g, flag:_flagOf(v.team)}))
+    .sort((a,b) => b.goals-a.goals || a.name.localeCompare(b.name))
+    .slice(0,10);
+}
+function renderScorers(){
+  const btn = document.getElementById('vp-top-btn'); if(btn) btn.classList.add('active');
+  const list = document.getElementById('vp-list');
+  const top = computeTopScorers();
+  if(!top.length){ list.innerHTML = '<div id="vp-empty">Încă niciun gol înregistrat.</div>'; return; }
+  list.innerHTML = '<div class="ts-head">🏆 TOP 10 MARCATORI</div>' + top.map((p,i)=>
+    `<div class="ts-row${i===0?' gold':''}"><span class="ts-rank">${i+1}</span><span class="ts-flag">${p.flag}</span><span class="ts-name">${p.name}</span><span class="ts-goals">${p.goals} ⚽</span></div>`
+  ).join('');
+}
+function toggleScorers(){
+  const btn = document.getElementById('vp-top-btn');
+  if(btn && btn.classList.contains('active')) vpFilter();   // inapoi la clipuri
+  else renderScorers();
 }
 
 vpFilter();
