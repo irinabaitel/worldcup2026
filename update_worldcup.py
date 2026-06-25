@@ -151,29 +151,56 @@ def _oembed(vid):
     return '', 0, 0, ''
 
 
+# Alias-uri: cum apar la AntenaPLAY numele care difera de cele din HTML
+TEAM_ALIASES = {
+    'Rep. Cehă': ['cehia'],
+    'R.D. Congo': ['congo'],
+}
+
+
+def _norm(s):
+    """Normalizeaza pentru potrivire: lowercase, fara diacritice, fara punctuatie."""
+    s = s.lower()
+    for a, b in [('ț', 't'), ('ţ', 't'), ('ș', 's'), ('ş', 's'), ('ă', 'a'),
+                 ('â', 'a'), ('î', 'i'), ('ç', 'c'), ('–', '-'), ('—', '-')]:
+        s = s.replace(a, b)
+    s = re.sub(r'[^a-z0-9 ]', '', s)
+    return re.sub(r'\s+', ' ', s).strip()
+
+
+def _team_in_title(team, ntitle):
+    frags = [_norm(team)] + [_norm(a) for a in TEAM_ALIASES.get(team, [])]
+    return any(f and f in ntitle for f in frags)
+
+
 def search_youtube(home, away, hg, ag):
-    """Cauta rezumatul de pe canalul AntenaPLAY. Citeste canalul DIRECT din pagina de
-    cautare (oEmbed da 401 pe clipurile cu embed dezactivat - multe la AntenaPLAY - si
-    asa pierdeam clipuri valide). Filtrul de durata exclude Shorts-urile verticale."""
+    """Cauta rezumatul de pe canalul AntenaPLAY.
+    AntenaPLAY scrie deseori echipele in ordine INVERSATA si cu nume diferite
+    (ex. 'Rep. Cehă' -> 'Cehia'), iar embed-ul e dezactivat (oEmbed da 401), de
+    aceea citim canal+titlu direct din pagina de cautare si potrivim pe titlul
+    normalizat: canal AntenaPLAY + contine 'rezumat' + AMBELE echipe (orice ordine).
+    Cerinta 'ambele + rezumat' exclude clipurile gresite ('Golurile Zilei...' sau
+    alt meci care contine doar o echipa comuna). NU folosim filtru de durata
+    (ascundea clipuri valide); titlul 'Rezumat: A - B' garanteaza format lung."""
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-    query = f'Rezumat {home} {away} {hg}-{ag} Campionatul Mondial 2026'
-    # sp=EgIYAw... = filtru durata 4-20 min -> exclude Shorts-urile verticale
-    url = f'https://www.youtube.com/results?search_query={requests.utils.quote(query)}&sp=EgIYAw%253D%253D'
+    query = f'Rezumat {home} {away} Campionatul Mondial 2026'
+    url = f'https://www.youtube.com/results?search_query={requests.utils.quote(query)}'
     try:
         r = requests.get(url, headers=headers, timeout=15)
     except Exception as e:
         print(f'  YouTube search error: {e}')
         return None
-    for b in r.text.split('"videoRenderer"')[1:9]:
+    for b in r.text.split('"videoRenderer"')[1:13]:
         mid = re.search(r'"videoId":"([a-zA-Z0-9_-]{11})"', b)
         ch = re.search(r'"(?:ownerText|longBylineText)":\{"runs":\[\{"text":"([^"]+)"', b)
         ti = re.search(r'"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"', b)
         if not mid:
             continue
         channel = ch.group(1) if ch else ''
-        title = (ti.group(1) if ti else '').lower()
-        if channel == 'AntenaPLAY' and (home.lower() in title or away.lower() in title):
-            return mid.group(1)     # AntenaPLAY, meci corect (landscape via filtrul de durata)
+        ntitle = _norm(ti.group(1) if ti else '')
+        if (channel == 'AntenaPLAY' and 'rezumat' in ntitle
+                and _team_in_title(home, ntitle) and _team_in_title(away, ntitle)):
+            return mid.group(1)
     return None                     # mai bine niciun clip decat unul gresit
 
 
