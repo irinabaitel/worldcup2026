@@ -405,18 +405,24 @@ function computeTopScorers(){
   Object.values(KNOCKOUT).forEach(arr => (arr||[]).forEach(m=>{
     if(m && m.goals){ add(m.goals.h, m.h); add(m.goals.a, m.a); }
   }));
-  return Object.entries(tally)
+  const all = Object.entries(tally)
     .map(([name,v]) => ({name, goals:v.g, flag:_flagOf(v.team)}))
-    .sort((a,b) => b.goals-a.goals || a.name.localeCompare(b.name))
-    .slice(0,10);
+    .sort((a,b) => b.goals-a.goals || a.name.localeCompare(b.name));
+  // prag = golurile celui de-al 10-lea jucator; ii includem pe TOTI cei cu cel
+  // putin atatea goluri -> toti egalii pe locul 10 intra, oricati ar fi
+  const cutoff = all.length > 10 ? all[9].goals : 0;
+  const top = all.filter(p => p.goals >= cutoff);
+  // rang partajat (1,2,2,4...): 1 + cati au STRICT mai multe goluri
+  top.forEach(p => p.rank = 1 + all.filter(x => x.goals > p.goals).length);
+  return top;
 }
 function renderScorers(){
   const btn = document.getElementById('vp-top-btn'); if(btn) btn.classList.add('active');
   const list = document.getElementById('vp-list');
   const top = computeTopScorers();
   if(!top.length){ list.innerHTML = '<div id="vp-empty">Încă niciun gol înregistrat.</div>'; return; }
-  list.innerHTML = '<div class="ts-head">🏆 TOP 10 MARCATORI</div>' + top.map((p,i)=>
-    `<div class="ts-row${i===0?' gold':''}"><span class="ts-rank">${i+1}</span><span class="ts-flag">${p.flag}</span><span class="ts-name">${p.name}</span><span class="ts-goals">${p.goals} ⚽</span></div>`
+  list.innerHTML = '<div class="ts-head">🏆 TOP 10 MARCATORI</div>' + top.map(p=>
+    `<div class="ts-row${p.rank===1?' gold':''}"><span class="ts-rank">${p.rank}</span><span class="ts-flag">${p.flag}</span><span class="ts-name">${p.name}</span><span class="ts-goals">${p.goals} ⚽</span></div>`
   ).join('');
 }
 function toggleScorers(){
