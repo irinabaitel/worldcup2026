@@ -3,7 +3,7 @@ name: Update World Cup
 # Ruleaza in cloud-ul GitHub, NU pe laptopul Irinei.
 on:
   schedule:
-    - cron: '0 */2 * * *'      # la fiecare 2 ore, non-stop
+    - cron: '0 * * * *'        # la fiecare ora, non-stop (prinde rezumatul AntenaPLAY repede dupa ce e postat)
   workflow_dispatch:           # buton de rulare manuala (din tab-ul Actions)
 
 permissions:
