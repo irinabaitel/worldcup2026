@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>World Cup 2026</title>
 <link rel="icon" type="image/png" sizes="any" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
@@ -211,6 +214,11 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .ko-final-label{font-size:0.56rem;color:#9aa0ae;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;text-align:center;}
 .ko-small-final{min-width:150px;border:2px solid #c8ccd6 !important;box-shadow:0 0 13px rgba(200,205,220,0.45) !important;background:linear-gradient(135deg,#1a2230,#0c1424) !important;}
 .ko-medal{font-size:1.5rem;flex-shrink:0;filter:drop-shadow(0 0 6px rgba(200,205,220,0.55));}
+/* ── taburi mobil (Grupe / Highlights) — ascunse pe desktop ── */
+#mobile-tabs{display:none;position:fixed;top:56px;left:0;right:0;height:42px;z-index:50;background:#0a1424;border-bottom:1px solid #1e3a6e;}
+.mtab{flex:1;background:none;border:none;color:#6a8ab5;font-size:0.95rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;border-bottom:3px solid transparent;}
+.mtab.active{color:#e8c84a;border-bottom-color:#e8c84a;}
+
 /* ── optimizare telefon ── */
 @media(max-width:760px){
   #bracket{padding:12px;}
@@ -219,6 +227,24 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
   .ko-row{font-size:0.67rem;}
   .ko-cup-img{width:42px;}
   .ko-big{min-width:150px;}
+
+  /* taburi sus + coboara continutul sub ele */
+  #mobile-tabs{display:flex;}
+  #main{top:98px;}                       /* 56 header + 42 taburi */
+
+  /* o singura sectiune vizibila pe rand; implicit GRUPE */
+  #viewport{position:absolute;inset:0;border-right:none;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+  #videopanel{position:absolute;inset:0;width:auto;display:none;}
+  body.m-hl #viewport{display:none;}
+  body.m-hl #videopanel{display:flex;}
+
+  /* grupele ca LISTA VERTICALA (anuleaza harta zoom-abila) */
+  #world{position:static !important;transform:none !important;width:auto !important;height:auto !important;padding:10px;}
+  .gcard{position:static !important;left:auto !important;top:auto !important;width:auto !important;margin:0 0 14px !important;cursor:default;}
+  #viewport.show-bracket{overflow:auto;}
+
+  /* bara de jos: ascunde butoanele de zoom irelevante pe telefon */
+  .mob-hide{display:none !important;}
 }
 </style>
 </head>
@@ -227,6 +253,11 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 <div id="header">
   <h1><img src="cupa.png" height="42" style="vertical-align:middle;margin-right:10px;filter:drop-shadow(0 0 6px #e8c84a88)">WORLD CUP 2026</h1>
   <div class="sub">USA · CANADA · MEXICO &nbsp;|&nbsp; 11 iun – 19 iul 2026</div>
+</div>
+
+<div id="mobile-tabs">
+  <button id="mtab-grupe" class="mtab active" onclick="mShow('grupe')">⚽ Grupe</button>
+  <button id="mtab-hl" class="mtab" onclick="mShow('hl')">🎬 Highlights</button>
 </div>
 
 <div id="main">
@@ -245,11 +276,11 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 
 <div id="nav">
   <button class="btn" id="koBtn" onclick="toggleBracket()" style="border-color:#6a5a2a;color:#e8c84a">🏆 Eliminatorii</button>
-  <button class="btn" onclick="zoomOut()">⊙ Toate grupele</button>
-  <button class="btn" onclick="prevGroup()">◀ Înapoi</button>
-  <span id="groupLabel"></span>
-  <button class="btn" onclick="nextGroup()">Înainte ▶</button>
-  <span id="hint" style="margin-left:12px">ESC = zoom out · ← → = navigare</span>
+  <button class="btn mob-hide" onclick="zoomOut()">⊙ Toate grupele</button>
+  <button class="btn mob-hide" onclick="prevGroup()">◀ Înapoi</button>
+  <span id="groupLabel" class="mob-hide"></span>
+  <button class="btn mob-hide" onclick="nextGroup()">Înainte ▶</button>
+  <span id="hint" class="mob-hide" style="margin-left:12px">ESC = zoom out · ← → = navigare</span>
   <button class="btn btn-update" onclick="showUpdateTip()">🔄 Update scoruri</button>
 </div>
 
@@ -790,6 +821,16 @@ document.addEventListener('click', (e)=>{
 
 // ─── ZOOM ─────────────────────────────────────────────────────────────────────
 let currentIdx=-1, _tx=0, _ty=0, _sc=1;
+const isMobile=()=>window.matchMedia('(max-width:760px)').matches;
+
+// taburi Grupe / Highlights (doar pe telefon)
+function mShow(which){
+  const hl = which==='hl';
+  document.body.classList.toggle('m-hl', hl);
+  const tg=document.getElementById('mtab-grupe'), th=document.getElementById('mtab-hl');
+  if(tg) tg.classList.toggle('active', !hl);
+  if(th) th.classList.toggle('active', hl);
+}
 
 function applyTransform(tx,ty,sc,animate){
   _tx=tx;_ty=ty;_sc=sc;
@@ -797,11 +838,13 @@ function applyTransform(tx,ty,sc,animate){
   world.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`;
 }
 function fitAll(){
+  if(isMobile())return;                  // pe telefon = lista verticala, fara zoom
   const vw=vp.clientWidth, vh=vp.clientHeight;
   const sc=Math.min((vw-20)/worldW,(vh-20)/worldH,1);
   applyTransform((vw-worldW*sc)/2,(vh-worldH*sc)/2,sc,true);
 }
 function zoomTo(idx){
+  if(isMobile())return;                  // pe telefon nu zoom-am pe card
   exitBracket();
   const gk=GKEYS[idx], col=idx%COLS, row=Math.floor(idx/COLS);
   const cx=PAD+col*(CARD_W+GAP_X)+CARD_W/2, cy=PAD+row*(CARD_H+GAP_Y)+CARD_H/2;
