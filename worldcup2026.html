@@ -406,13 +406,17 @@ function _flagOf(team){
 }
 function computeTopScorers(){
   const tally = {};
+  const stripD = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
   const add = (arr, team)=>{
     (arr||[]).forEach(g=>{
       if(/csc$/.test(g)) return;                       // autogolul nu se numara
       const name = g.replace(/\s+\d+(\+\d+)?'(pen)?$/, '').trim();
       if(!name) return;
-      if(!tally[name]) tally[name] = {g:0, team};
-      tally[name].g++;
+      const key = stripD(name);                        // uneste variantele cu/fara diacritice ("Mbappé"="Mbappe")
+      if(!tally[key]) tally[key] = {g:0, team, name};
+      tally[key].g++;
+      // afiseaza numele CU diacritice daca exista o varianta cu diacritice
+      if(/[^\x00-\x7F]/.test(name) && !/[^\x00-\x7F]/.test(tally[key].name)) tally[key].name = name;
     });
   };
   Object.values(GROUPS).forEach(gr => gr.matches.forEach(m=>{
@@ -653,7 +657,7 @@ const GROUPS = {
     {n:'Senegal',  f:'🇸🇳'},
     {n:'Irak',     f:'🇮🇶'},
   ], matches:[
-    {h:'Franța',  a:'Senegal', date:'16 iun', score:[3,1], goals:{h:["Mbappe 66'","Barcola 82'","Mbappe 90+6'"],a:["I.Mbaye 90+5'"]}},
+    {h:'Franța',  a:'Senegal', date:'16 iun', score:[3,1], goals:{h:["Mbappé 66'","Barcola 82'","Mbappé 90+6'"],a:["I.Mbaye 90+5'"]}},
     {h:'Norvegia', a:'Irak',    date:'16 iun', score:[4,1], goals:{h:["Haaland 29'","Haaland 43'","Ostigard 76'","A.Hussein 90+6'csc"],a:["A.Hussein 39'"]}},
     {h:'Franța',  a:'Norvegia',date:'26 iun', score:null},
     {h:'Senegal',  a:'Irak',    date:'26 iun', score:null},
