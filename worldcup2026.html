@@ -245,6 +245,10 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 
   /* bara de jos: ascunde butoanele de zoom irelevante pe telefon */
   .mob-hide{display:none !important;}
+
+  /* bracket pe telefon: derulare laterala cu degetul, fara taierea rundei din stanga
+     (justify-content:center taie inceputul cand continutul e mai lat decat ecranul) */
+  #viewport.show-bracket #bracket{justify-content:flex-start;padding:14px;}
 }
 </style>
 </head>
@@ -550,6 +554,7 @@ function showKoGoals(e, key, idx){
 
 function toggleBracket(){
   const vp = document.getElementById('viewport');
+  if(isMobile()) document.body.classList.remove('m-hl');   // arata zona grupe/bracket, nu highlights
   const on = vp.classList.toggle('show-bracket');
   document.getElementById('koBtn').textContent = on ? '⊙ Înapoi la grupe' : '🏆 Eliminatorii';
   if(on) renderBracket();
@@ -826,6 +831,7 @@ const isMobile=()=>window.matchMedia('(max-width:760px)').matches;
 // taburi Grupe / Highlights (doar pe telefon)
 function mShow(which){
   const hl = which==='hl';
+  if(!hl) exitBracket();                  // 'Grupe' = lista grupelor (iese din bracket daca era deschis)
   document.body.classList.toggle('m-hl', hl);
   const tg=document.getElementById('mtab-grupe'), th=document.getElementById('mtab-hl');
   if(tg) tg.classList.toggle('active', !hl);
