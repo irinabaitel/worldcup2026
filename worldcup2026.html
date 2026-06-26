@@ -31,8 +31,6 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .btn:hover{background:#1a3a6e;color:#fff;border-color:#4a8acf}
 #groupLabel{color:#e8c84a;font-size:0.85rem;letter-spacing:2px;min-width:120px;text-align:center}
 #hint{color:#3a5a8a;font-size:0.75rem}
-.btn-update{background:#0d2a0d;border-color:#2a6a2a;color:#4acf4a;margin-left:16px}
-.btn-update:hover{background:#1a4a1a;color:#6aef6a;border-color:#4acf4a}
 
 /* ── LAYOUT SPLIT ── */
 #main{position:fixed;top:56px;left:0;right:0;bottom:52px;display:flex;}
@@ -160,12 +158,6 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .match.played:hover{background:#0d2040;border-color:#2a4a7a;}
 
 /* ── UPDATE TIP ── */
-#updateTip{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;}
-#updateTip.visible{display:flex}
-#updateBox{background:#0d1e3a;border:1px solid #2a4a7a;border-radius:16px;padding:32px 36px;text-align:center;max-width:420px;box-shadow:0 0 60px rgba(0,0,20,0.8);}
-#updateCmd{background:#071020;border:1px dashed #2a6a2a;border-radius:8px;padding:12px 20px;font-size:1rem;color:#4acf4a;cursor:pointer;letter-spacing:0.5px;transition:background 0.2s;}
-#updateCmd:hover{background:#0d2a0d}
-#copyMsg{color:#4acf4a;font-size:0.78rem;height:20px;margin-top:6px;opacity:0;transition:opacity 0.3s}
 
 /* ── BRACKET ELIMINATORII ── */
 #bracket{position:absolute;inset:0;background:#080f1e;overflow:auto;display:none;padding:20px 26px;z-index:5;-webkit-overflow-scrolling:touch;}
@@ -285,7 +277,6 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
   <span id="groupLabel" class="mob-hide"></span>
   <button class="btn mob-hide" onclick="nextGroup()">Înainte ▶</button>
   <span id="hint" class="mob-hide" style="margin-left:12px">ESC = zoom out · ← → = navigare</span>
-  <button class="btn btn-update" onclick="showUpdateTip()">🔄 Update scoruri</button>
 </div>
 
 <div id="goals-popup">
@@ -294,16 +285,6 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
   <div class="gp-teams" id="gp-teams"></div>
 </div>
 
-<div id="updateTip">
-  <div id="updateBox">
-    <div style="font-size:1.4rem;margin-bottom:8px">🔄 Actualizează scorurile</div>
-    <div style="color:#94a3b8;font-size:0.9rem;margin-bottom:16px">Deschide Claude Code și scrie:</div>
-    <div id="updateCmd" onclick="copyCmd()" title="Click pentru copiere">actualizează scorurile World Cup</div>
-    <div id="copyMsg">✓ copiat!</div>
-    <div style="color:#4a6a8a;font-size:0.78rem;margin-top:12px">Claude va căuta scorurile și va actualiza fișierul.<br>Reîncarcă pagina după (F5).</div>
-    <button class="btn" style="margin-top:16px" onclick="hideTip()">Închide</button>
-  </div>
-</div>
 
 <script>
 // ─── HIGHLIGHT-URI ─────────────────────────────────────────────────────────────
@@ -910,18 +891,6 @@ vp.addEventListener('wheel',e=>{
   world.style.transition='none';
   world.style.transform=`translate(${_tx}px,${_ty}px) scale(${_sc})`;
 },{passive:false});
-
-// ─── UPDATE TIP ───────────────────────────────────────────────────────────────
-function showUpdateTip(){document.getElementById('updateTip').classList.add('visible');}
-function hideTip(){document.getElementById('updateTip').classList.remove('visible');}
-function copyCmd(){
-  navigator.clipboard.writeText('actualizează scorurile World Cup');
-  const msg=document.getElementById('copyMsg');msg.style.opacity=1;
-  setTimeout(()=>msg.style.opacity=0,2000);
-}
-document.getElementById('updateTip').addEventListener('click',e=>{
-  if(e.target===document.getElementById('updateTip'))hideTip();
-});
 
 fitAll();
 </script>
