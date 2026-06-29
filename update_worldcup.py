@@ -85,6 +85,14 @@ TEAM_MAP = {
 
 MONTHS = 'ian feb mar apr mai iun iul aug sep oct nov dec'.split()
 
+# stagiu API -> eticheta de runda din pagina (pentru highlights; trebuie sa fie
+# din lista STAGES a panoului ca sa mearga filtrele)
+STAGE_RO = {
+    'GROUP_STAGE': 'Grupe', 'LAST_32': 'Șaisprezecimi', 'LAST_16': 'Optimi',
+    'QUARTER_FINALS': 'Sferturi', 'SEMI_FINALS': 'Semifinale',
+    'THIRD_PLACE': 'Finala mică', 'FINAL': 'Finala',
+}
+
 
 def ro(name):
     if name not in TEAM_MAP:
@@ -112,6 +120,7 @@ def get_finished_matches():
             'day': f'{dt.day} {MONTHS[dt.month-1]}',
             'group': grp[-1] if grp else None,          # 'GROUP_A' -> 'A'
             'is_group': m.get('stage') == 'GROUP_STAGE',
+            'stage': STAGE_RO.get(m.get('stage'), 'Grupe'),
         })
     return matches
 
@@ -205,8 +214,9 @@ def search_youtube(home, away, hg, ag):
 
 
 def add_highlight(html, m, vid):
-    grp = f"group:'{m['group']}', " if m['group'] else ''
-    entry = (f"  {{day:'{m['day']}', stage:'Grupe', {grp}"
+    grp = f"group:'{m['group']}', " if m.get('group') else ''   # doar la grupe
+    stage = m.get('stage') or 'Grupe'
+    entry = (f"  {{day:'{m['day']}', stage:'{stage}', {grp}"
              f"m:'{m['home']} {m['hg']}–{m['ag']} {m['away']}', id:'{vid}'}},\n")
     return html.replace('  // Optimi', entry + '  // Optimi', 1)
 
@@ -255,11 +265,9 @@ def main():
             print(f"   ✔ {m['home']} {m['hg']}-{m['ag']} {m['away']} ({m['day']})")
             changed = True
 
-    # --- Highlights (doar grupe, doar meciurile fara highlight) ---
+    # --- Highlights (grupe SI eliminatorii, doar meciurile fara highlight) ---
     print('\n3. Caut highlight-uri pentru meciurile fara rezumat...')
     for m in matches:
-        if not m['is_group']:
-            continue  # faza eliminatorie -> de tratat separat cand exista sectiunea
         if highlight_exists(html, m['home'], m['away']):
             continue
         vid = search_youtube(m['home'], m['away'], m['hg'], m['ag'])
