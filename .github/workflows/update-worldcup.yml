@@ -40,3 +40,8 @@ jobs:
 
       - name: Completeaza marcatorii (din Wikipedia)
         run: python fetch_goals_wiki.py
+
+      - name: Actualizeaza bracketul eliminatoriilor
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        run: python update_knockout.py
