@@ -64,9 +64,22 @@ def match_obj(m, fm):
     af = fm.get(away, '') if away else ''
     parts = [f"h:{js_team(home)}", f"a:{js_team(away)}",
              f"hf:'{hf}'", f"af:'{af}'", f"date:'{day_str(m['utcDate'])}'"]
-    ft = m.get('score', {}).get('fullTime', {})
-    if m.get('status') == 'FINISHED' and ft.get('home') is not None and ft.get('away') is not None:
-        parts.append(f"score:[{ft['home']},{ft['away']}]")
+    s = m.get('score', {})
+    if m.get('status') == 'FINISHED':
+        if s.get('duration') == 'PENALTY_SHOOTOUT':
+            # ATENTIE: fullTime include penalty-urile adunate la scor -> folosim
+            # scorul din 90'+prelungiri (egalitate) si penalty-urile separat
+            rt = s.get('regularTime') or {}
+            et = s.get('extraTime') or {}
+            sh = (rt.get('home') or 0) + (et.get('home') or 0)
+            sa = (rt.get('away') or 0) + (et.get('away') or 0)
+            pen = s.get('penalties') or {}
+            parts.append(f"score:[{sh},{sa}]")
+            parts.append(f"pen:[{pen.get('home',0)},{pen.get('away',0)}]")
+        else:
+            ft = s.get('fullTime') or {}
+            if ft.get('home') is not None and ft.get('away') is not None:
+                parts.append(f"score:[{ft['home']},{ft['away']}]")
     return '{' + ', '.join(parts) + '}'
 
 
