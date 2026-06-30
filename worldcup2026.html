@@ -182,6 +182,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .ko-sc{color:#e8c84a;font-weight:700;flex-shrink:0;min-width:14px;text-align:right;}
 .ko-row.win .ko-team{color:#4acfa0;font-weight:700;}
 .ko-date{font-size:0.6rem;color:#5a7398;text-align:center;margin-top:3px;letter-spacing:0.5px;}
+.ko-pen{font-size:0.58rem;color:#e8c84a;text-align:center;margin-top:3px;letter-spacing:0.3px;opacity:0.9;}
 .ko-match.ko-played{cursor:pointer;}
 .ko-match.ko-played:hover{filter:brightness(1.28);}
 /* diferentiere prin CULOARE pe runde (border card + titlu) */
@@ -475,7 +476,7 @@ vpFilter();
 // KNOCKOUT e completat automat de update_worldcup.py din API (echipe + scor pe
 // masura ce se stabilesc). Gol acum = se afiseaza casute "?" cu forma arborelui.
 const KNOCKOUT = {
-  'Șaisprezecimi':[{h:'Africa de Sud', a:'Canada', hf:'🇿🇦', af:'🇨🇦', date:'28 iun', score:[0,1]},{h:'Brazilia', a:'Japonia', hf:'🇧🇷', af:'🇯🇵', date:'29 iun', score:[2,1]},{h:'Germania', a:'Paraguay', hf:'🇩🇪', af:'🇵🇾', date:'29 iun', score:[4,5]},{h:'Olanda', a:'Maroc', hf:'🇳🇱', af:'🇲🇦', date:'30 iun', score:[3,4]},{h:'Coasta de Fildeș', a:'Norvegia', hf:'🇨🇮', af:'🇳🇴', date:'30 iun'},{h:'Franța', a:'Suedia', hf:'🇫🇷', af:'🇸🇪', date:'30 iun'},{h:'Mexic', a:'Ecuador', hf:'🇲🇽', af:'🇪🇨', date:'1 iul'},{h:'Anglia', a:'R.D. Congo', hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', af:'🇨🇩', date:'1 iul'},{h:'Belgia', a:'Senegal', hf:'🇧🇪', af:'🇸🇳', date:'1 iul'},{h:'SUA', a:'Bosnia', hf:'🇺🇸', af:'🇧🇦', date:'2 iul'},{h:'Spania', a:'Austria', hf:'🇪🇸', af:'🇦🇹', date:'2 iul'},{h:'Portugalia', a:'Croația', hf:'🇵🇹', af:'🇭🇷', date:'2 iul'},{h:'Elveția', a:'Algeria', hf:'🇨🇭', af:'🇩🇿', date:'3 iul'},{h:'Australia', a:'Egipt', hf:'🇦🇺', af:'🇪🇬', date:'3 iul'},{h:'Argentina', a:'Capul Verde', hf:'🇦🇷', af:'🇨🇻', date:'3 iul'},{h:'Columbia', a:'Ghana', hf:'🇨🇴', af:'🇬🇭', date:'4 iul'}],
+  'Șaisprezecimi':[{h:'Africa de Sud', a:'Canada', hf:'🇿🇦', af:'🇨🇦', date:'28 iun', score:[0,1]},{h:'Brazilia', a:'Japonia', hf:'🇧🇷', af:'🇯🇵', date:'29 iun', score:[2,1]},{h:'Germania', a:'Paraguay', hf:'🇩🇪', af:'🇵🇾', date:'29 iun', score:[1,1], pen:[3,4]},{h:'Olanda', a:'Maroc', hf:'🇳🇱', af:'🇲🇦', date:'30 iun', score:[1,1], pen:[2,3]},{h:'Coasta de Fildeș', a:'Norvegia', hf:'🇨🇮', af:'🇳🇴', date:'30 iun'},{h:'Franța', a:'Suedia', hf:'🇫🇷', af:'🇸🇪', date:'30 iun'},{h:'Mexic', a:'Ecuador', hf:'🇲🇽', af:'🇪🇨', date:'1 iul'},{h:'Anglia', a:'R.D. Congo', hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', af:'🇨🇩', date:'1 iul'},{h:'Belgia', a:'Senegal', hf:'🇧🇪', af:'🇸🇳', date:'1 iul'},{h:'SUA', a:'Bosnia', hf:'🇺🇸', af:'🇧🇦', date:'2 iul'},{h:'Spania', a:'Austria', hf:'🇪🇸', af:'🇦🇹', date:'2 iul'},{h:'Portugalia', a:'Croația', hf:'🇵🇹', af:'🇭🇷', date:'2 iul'},{h:'Elveția', a:'Algeria', hf:'🇨🇭', af:'🇩🇿', date:'3 iul'},{h:'Australia', a:'Egipt', hf:'🇦🇺', af:'🇪🇬', date:'3 iul'},{h:'Argentina', a:'Capul Verde', hf:'🇦🇷', af:'🇨🇻', date:'3 iul'},{h:'Columbia', a:'Ghana', hf:'🇨🇴', af:'🇬🇭', date:'4 iul'}],
   'Optimi':[{h:'Canada', a:'Maroc', hf:'🇨🇦', af:'🇲🇦', date:'4 iul'},{h:'Paraguay', a:null, hf:'🇵🇾', af:'', date:'4 iul'},{h:'Brazilia', a:null, hf:'🇧🇷', af:'', date:'5 iul'},{h:null, a:null, hf:'', af:'', date:'6 iul'},{h:null, a:null, hf:'', af:'', date:'6 iul'},{h:null, a:null, hf:'', af:'', date:'7 iul'},{h:null, a:null, hf:'', af:'', date:'7 iul'},{h:null, a:null, hf:'', af:'', date:'7 iul'}],
   'Sferturi':[{h:null, a:null, hf:'', af:'', date:'9 iul'},{h:null, a:null, hf:'', af:'', date:'10 iul'},{h:null, a:null, hf:'', af:'', date:'11 iul'},{h:null, a:null, hf:'', af:'', date:'12 iul'}],
   'Semifinale':[{h:null, a:null, hf:'', af:'', date:'14 iul'},{h:null, a:null, hf:'', af:'', date:'15 iul'}],
@@ -497,11 +498,14 @@ function koCard(m, opts){
     return `<div class="ko-match empty${extra}"><div class="ko-row"><span class="ko-team">?</span><span class="ko-sc"></span></div><div class="ko-row"><span class="ko-team">?</span><span class="ko-sc"></span></div></div>`;
   }
   const played = Array.isArray(m.score);
-  const hw = played && m.score[0]>m.score[1] ? ' win' : '';
-  const aw = played && m.score[1]>m.score[0] ? ' win' : '';
+  const pen = Array.isArray(m.pen) ? m.pen : null;     // [penGazda, penOaspete] daca s-a decis la penalty-uri
+  // castigatoarea: la penalty-uri dupa pen, altfel dupa scor
+  const hw = played && (pen ? pen[0]>pen[1] : m.score[0]>m.score[1]) ? ' win' : '';
+  const aw = played && (pen ? pen[1]>pen[0] : m.score[1]>m.score[0]) ? ' win' : '';
   const s0 = played ? m.score[0] : '';
   const s1 = played ? m.score[1] : '';
-  const foot = (!played && m.date) ? `<div class="ko-date">${m.date}</div>` : '';
+  const foot = (!played && m.date) ? `<div class="ko-date">${m.date}</div>`
+             : (pen ? `<div class="ko-pen">⚽ ${pen[0]}–${pen[1]} la penalty-uri</div>` : '');
   const click = (played && opts.key!=null) ? ` onclick="showKoGoals(event,'${opts.key}',${opts.idx})" title="Click pentru marcatori"` : '';
   const pc = played ? ' ko-played' : '';
   return `<div class="ko-match${extra}${pc}"${click}>`
