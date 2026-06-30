@@ -924,6 +924,29 @@ vp.addEventListener('wheel',e=>{
 },{passive:false});
 
 fitAll();
+
+// ─── AUTO-REFRESH DISCRET ─────────────────────────────────────────────────────
+// Date mereu proaspete fara refresh manual. Nu deranjeaza cat derulezi/te uiti:
+// reincarca doar (a) cand revii in tab dupa o pauza, sau (b) periodic cand pagina
+// e vizibila si neatinsa de >2 min, fara popup deschis. Clipurile se deschid in tab
+// nou, deci reload-ul nu intrerupe niciun video.
+(function(){
+  let lastInteract = Date.now();
+  ['click','touchstart','scroll','keydown','input','wheel'].forEach(ev =>
+    window.addEventListener(ev, ()=>{ lastInteract = Date.now(); }, {passive:true, capture:true}));
+  const busy = ()=>{
+    const p = document.getElementById('goals-popup');
+    return p && p.style.display === 'block';            // popup marcatori deschis
+  };
+  document.addEventListener('visibilitychange', ()=>{   // (a) revii in tab dupa pauza
+    if(!document.hidden && Date.now()-lastInteract > 90*1000) location.reload();
+  });
+  setInterval(()=>{                                     // (b) periodic, doar cand e idle
+    if(document.hidden || busy()) return;
+    if(Date.now()-lastInteract < 2*60*1000) return;     // te uiti activ -> nu deranja
+    location.reload();
+  }, 5*60*1000);
+})();
 </script>
 </body>
 </html>
