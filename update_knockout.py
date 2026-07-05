@@ -42,11 +42,26 @@ def ro(name):
     return TEAM_MAP.get(name, name)
 
 
+def _flag_img(val):
+    """Converteste steagul din GROUPS in IMAGINE (doar pt bracket; grupele raman
+    cu emoji). Codul de tara il derivam din emoji-ul regional-indicator (🇧🇷=B+R=br).
+    Anglia/Scoția sunt deja <img> in GROUPS -> le lasam asa. flagcdn = SVG-uri gratis."""
+    if val.startswith('<img'):
+        return val
+    ri = [c for c in val if 0x1F1E6 <= ord(c) <= 0x1F1FF]
+    if len(ri) == 2:
+        code = ''.join(chr(ord(c) - 0x1F1E6 + 97) for c in ri)   # -> 'br','fr',...
+        return (f'<img src="https://flagcdn.com/{code}.svg" style="height:0.85em;'
+                f'width:auto;vertical-align:-1px;border-radius:2px;'
+                f'box-shadow:0 0 0 0.5px rgba(255,255,255,0.25)" alt="">')
+    return val
+
+
 def flag_map(html):
-    """RO_nume -> steag, citit din datele GROUPS din HTML."""
+    """RO_nume -> steag-IMAGINE (pt bracket), derivat din datele GROUPS."""
     fm = {}
     for n, f in re.findall(r"\{n:'([^']+)',\s*f:'([^']*)'\}", html):
-        fm[n] = f
+        fm[n] = _flag_img(f)
     return fm
 
 
