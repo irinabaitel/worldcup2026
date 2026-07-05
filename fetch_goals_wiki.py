@@ -64,7 +64,7 @@ def parse_scorers(block):
 
 def matches_from(wt):
     res = []
-    for chunk in wt.split('{{#invoke:football box')[1:]:
+    for chunk in re.split(r'\{\{#invoke:[Ff]ootball box', wt)[1:]:   # [Ff]: pagina R32 foloseste 'Football box'
         c1 = re.search(r'team1\s*=\s*\{\{#invoke:flag\|fb[^|}]*\|([A-Za-z]{2,3})', chunk)
         c2 = re.search(r'team2\s*=\s*\{\{#invoke:flag\|fb[^|}]*\|([A-Za-z]{2,3})', chunk)
         sc = re.search(r'score\s*=.*?(\d+)[–\-](\d+)', chunk)

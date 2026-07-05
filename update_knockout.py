@@ -60,18 +60,20 @@ def js_team(v):
 
 
 def knockout_scorers():
-    """{frozenset({roA, roB}): {roA:[goluri], roB:[goluri]}} din pagina Wikipedia
-    'knockout stage'. Marcatorii sunt din 90'+prelungiri (nu loviturile de departajare)."""
+    """{frozenset({roA, roB}): {roA:[goluri], roB:[goluri]}} din Wikipedia. Doua pagini:
+    'round of 32' (Șaisprezecimile, template 'Football box') + 'knockout stage'
+    (optimi+). Marcatorii sunt din 90'+prelungiri (nu loviturile de departajare)."""
     lookup = {}
-    wt = wikitext('2026 FIFA World Cup knockout stage')
-    if not wt:
-        print('  ⚠ N-am putut citi pagina Wikipedia knockout.')
-        return lookup
-    for t1, t2, g1, g2 in matches_from(wt):
-        if t1 not in CODE2RO or t2 not in CODE2RO:
+    for page in ['2026 FIFA World Cup round of 32', '2026 FIFA World Cup knockout stage']:
+        wt = wikitext(page)
+        if not wt:
+            print(f'  ⚠ N-am putut citi "{page}".')
             continue
-        r1, r2 = CODE2RO[t1], CODE2RO[t2]
-        lookup[frozenset((r1, r2))] = {r1: g1, r2: g2}
+        for t1, t2, g1, g2 in matches_from(wt):
+            if t1 not in CODE2RO or t2 not in CODE2RO:
+                continue
+            r1, r2 = CODE2RO[t1], CODE2RO[t2]
+            lookup[frozenset((r1, r2))] = {r1: g1, r2: g2}
     print(f'  Marcatori knockout Wikipedia: {len(lookup)} meciuri.')
     return lookup
 
