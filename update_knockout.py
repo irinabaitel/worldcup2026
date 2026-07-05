@@ -59,6 +59,35 @@ def js_team(v):
     return 'null' if v is None else "'" + v.replace("'", "\\'") + "'"
 
 
+def _winner_ro(m):
+    w = m.get('score', {}).get('winner')
+    if w == 'HOME_TEAM': return ro(m['homeTeam'].get('name'))
+    if w == 'AWAY_TEAM': return ro(m['awayTeam'].get('name'))
+    return None
+
+
+def reorder_r32(r32, optimi):
+    """API returneaza Șaisprezecimile in alta ordine (dupa data/stadion), NU in
+    ordinea bracketului -> liniile catre optimi ies gresite. Le reordonam ca
+    fiecare pereche consecutiva sa hraneasca optimea de langa ea. (Optimi/sferturi/
+    semi sunt deja in ordine buna in API: perechi vecine -> runda urmatoare.)"""
+    by_winner = {}
+    for m in r32:
+        w = _winner_ro(m)
+        if w:
+            by_winner[w] = m
+    ordered, seen = [], set()
+    for om in optimi:
+        for name in (ro(om['homeTeam'].get('name')), ro(om['awayTeam'].get('name'))):
+            m = by_winner.get(name)
+            if m is not None and id(m) not in seen:
+                ordered.append(m); seen.add(id(m))
+    for m in r32:                       # optime inca nedecisa -> lasam ordinea API
+        if id(m) not in seen:
+            ordered.append(m); seen.add(id(m))
+    return ordered
+
+
 def knockout_scorers():
     """{frozenset({roA, roB}): {roA:[goluri], roB:[goluri]}} din Wikipedia. Doua pagini:
     'round of 32' (Șaisprezecimile, template 'Football box') + 'knockout stage'
@@ -136,6 +165,9 @@ def main():
     if not any(buckets.values()):
         print('Inca niciun meci de eliminatorii la API.')
         return
+
+    # Șaisprezecimile vin in ordine gresita de la API -> reordoneaza dupa bracket
+    buckets['Șaisprezecimi'] = reorder_r32(buckets['Șaisprezecimi'], buckets['Optimi'])
 
     scorers = knockout_scorers()
 
