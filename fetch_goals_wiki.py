@@ -76,52 +76,57 @@ def matches_from(wt):
                     parse_scorers(g2.group(1)) if g2 else []))
     return res
 
-html = open(HTML, encoding='utf-8').read()
+def main():
+    html = open(HTML, encoding='utf-8').read()
 
-# nimic de facut daca toate meciurile au deja marcatori (evita fetch inutil)
-if not re.search(r"score:\[\d+,\d+\]\}", html):
-    print('Toate meciurile au deja marcatori - nimic de facut.')
-    sys.exit(0)
+    # nimic de facut daca toate meciurile au deja marcatori (evita fetch inutil)
+    if not re.search(r"score:\[\d+,\d+\]\}", html):
+        print('Toate meciurile au deja marcatori - nimic de facut.')
+        return
 
-unknown, filled, zerozero, missed = set(), [], 0, []
-for gl in GROUPS:
-    time.sleep(0.5)
-    wt = wikitext(f'2026 FIFA World Cup Group {gl}')
-    if not wt:
-        print(f'  ⚠ Grupa {gl}: n-am putut citi pagina'); continue
-    for t1, t2, g1, g2 in matches_from(wt):
-        if t1 not in CODE2RO: unknown.add(t1); continue
-        if t2 not in CODE2RO: unknown.add(t2); continue
-        home, away = CODE2RO[t1], CODE2RO[t2]
-        for (hx, ax, gh, ga) in [(home, away, g1, g2), (away, home, g2, g1)]:
-            pat = re.compile(rf"(\{{h:'{re.escape(hx)}',\s*a:'{re.escape(ax)}',\s*date:'[^']*',\s*score:\[(\d+),(\d+)\])\}}")
-            m = pat.search(html)
-            if not m:
-                continue
-            total = int(m.group(2)) + int(m.group(3))
-            if g1 or g2 or total == 0:
-                gobj = f"goals:{{h:{json.dumps(gh,ensure_ascii=False)},a:{json.dumps(ga,ensure_ascii=False)}}}"
-                html = html[:m.start()] + m.group(1) + ', ' + gobj + '}' + html[m.end():]
-                if g1 or g2: filled.append(f"{hx} {gh} | {ax} {ga}")
-                else: zerozero += 1
-            else:
-                missed.append(f"{hx} vs {ax} ({m.group(2)}-{m.group(3)})")
-            break
+    unknown, filled, zerozero, missed = set(), [], 0, []
+    for gl in GROUPS:
+        time.sleep(0.5)
+        wt = wikitext(f'2026 FIFA World Cup Group {gl}')
+        if not wt:
+            print(f'  ⚠ Grupa {gl}: n-am putut citi pagina'); continue
+        for t1, t2, g1, g2 in matches_from(wt):
+            if t1 not in CODE2RO: unknown.add(t1); continue
+            if t2 not in CODE2RO: unknown.add(t2); continue
+            home, away = CODE2RO[t1], CODE2RO[t2]
+            for (hx, ax, gh, ga) in [(home, away, g1, g2), (away, home, g2, g1)]:
+                pat = re.compile(rf"(\{{h:'{re.escape(hx)}',\s*a:'{re.escape(ax)}',\s*date:'[^']*',\s*score:\[(\d+),(\d+)\])\}}")
+                m = pat.search(html)
+                if not m:
+                    continue
+                total = int(m.group(2)) + int(m.group(3))
+                if g1 or g2 or total == 0:
+                    gobj = f"goals:{{h:{json.dumps(gh,ensure_ascii=False)},a:{json.dumps(ga,ensure_ascii=False)}}}"
+                    html = html[:m.start()] + m.group(1) + ', ' + gobj + '}' + html[m.end():]
+                    if g1 or g2: filled.append(f"{hx} {gh} | {ax} {ga}")
+                    else: zerozero += 1
+                else:
+                    missed.append(f"{hx} vs {ax} ({m.group(2)}-{m.group(3)})")
+                break
 
-print(f"✅ Marcatori completati: {len(filled)} | 0-0 marcate: {zerozero}")
-for x in filled[:60]: print("  ", x)
-if unknown: print(f"⚠ CODURI NEMAPATE: {sorted(unknown)}")
-if missed: print(f"⚠ Scor non-zero, marcatori negasiti ({len(missed)}): {missed[:20]}")
+    print(f"✅ Marcatori completati: {len(filled)} | 0-0 marcate: {zerozero}")
+    for x in filled[:60]: print("  ", x)
+    if unknown: print(f"⚠ CODURI NEMAPATE: {sorted(unknown)}")
+    if missed: print(f"⚠ Scor non-zero, marcatori negasiti ({len(missed)}): {missed[:20]}")
 
-if filled or zerozero:
-    open(HTML, 'w', encoding='utf-8').write(html)
-    try:
-        os.chdir(BASE)
-        subprocess.run(['git', 'add', 'worldcup2026.html'], check=True)
-        subprocess.run(['git', 'commit', '-m', f'Marcatori Wikipedia ({len(filled)} meciuri)'], check=True)
-        subprocess.run(['git', 'push'], check=True)
-        print('Push GitHub reusit (marcatori).')
-    except subprocess.CalledProcessError as e:
-        print(f'Eroare git: {e}')
-else:
-    print('Nicio modificare.')
+    if filled or zerozero:
+        open(HTML, 'w', encoding='utf-8').write(html)
+        try:
+            os.chdir(BASE)
+            subprocess.run(['git', 'add', 'worldcup2026.html'], check=True)
+            subprocess.run(['git', 'commit', '-m', f'Marcatori Wikipedia ({len(filled)} meciuri)'], check=True)
+            subprocess.run(['git', 'push'], check=True)
+            print('Push GitHub reusit (marcatori).')
+        except subprocess.CalledProcessError as e:
+            print(f'Eroare git: {e}')
+    else:
+        print('Nicio modificare.')
+
+
+if __name__ == '__main__':
+    main()

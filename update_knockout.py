@@ -4,10 +4,11 @@ update_knockout.py
 Populeaza/actualizeaza bracketul fazei eliminatorii (obiectul KNOCKOUT din
 worldcup2026.html) din football-data.org. Ordinea meciurilor din API = ordinea
 bracketului (perechi consecutive -> meciul din runda urmatoare).
-Marcatorii din eliminatorii NU se iau aici (separat, daca va fi nevoie).
+MARCATORII din eliminatorii se iau AICI, de pe Wikipedia (pagina 'knockout stage'),
+si se scriu in campul goals al fiecarui meci -> nu se pierd la regenerare.
 Ruleaza ca pas in workflow-ul cloud, dupa scoruri.
 """
-import requests, re, os, sys, subprocess
+import requests, re, os, sys, subprocess, json
 from datetime import datetime
 try:
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -15,6 +16,7 @@ except Exception:
     pass
 
 from update_worldcup import TEAM_MAP, MONTHS
+from fetch_goals_wiki import wikitext, matches_from, CODE2RO   # reutilizam parsarea Wikipedia
 
 API_TOKEN = os.environ.get('FOOTBALL_DATA_TOKEN', '')
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -57,7 +59,24 @@ def js_team(v):
     return 'null' if v is None else "'" + v.replace("'", "\\'") + "'"
 
 
-def match_obj(m, fm):
+def knockout_scorers():
+    """{frozenset({roA, roB}): {roA:[goluri], roB:[goluri]}} din pagina Wikipedia
+    'knockout stage'. Marcatorii sunt din 90'+prelungiri (nu loviturile de departajare)."""
+    lookup = {}
+    wt = wikitext('2026 FIFA World Cup knockout stage')
+    if not wt:
+        print('  ⚠ N-am putut citi pagina Wikipedia knockout.')
+        return lookup
+    for t1, t2, g1, g2 in matches_from(wt):
+        if t1 not in CODE2RO or t2 not in CODE2RO:
+            continue
+        r1, r2 = CODE2RO[t1], CODE2RO[t2]
+        lookup[frozenset((r1, r2))] = {r1: g1, r2: g2}
+    print(f'  Marcatori knockout Wikipedia: {len(lookup)} meciuri.')
+    return lookup
+
+
+def match_obj(m, fm, scorers):
     home = ro(m['homeTeam'].get('name'))
     away = ro(m['awayTeam'].get('name'))
     hf = fm.get(home, '') if home else ''
@@ -80,6 +99,13 @@ def match_obj(m, fm):
             ft = s.get('fullTime') or {}
             if ft.get('home') is not None and ft.get('away') is not None:
                 parts.append(f"score:[{ft['home']},{ft['away']}]")
+    # marcatori din Wikipedia (daca ii avem pentru perechea asta)
+    if home and away:
+        gg = scorers.get(frozenset((home, away)))
+        if gg:
+            gh, ga = gg.get(home, []), gg.get(away, [])
+            if gh or ga:
+                parts.append(f"goals:{{h:{json.dumps(gh, ensure_ascii=False)},a:{json.dumps(ga, ensure_ascii=False)}}}")
     return '{' + ', '.join(parts) + '}'
 
 
@@ -109,9 +135,11 @@ def main():
         print('Inca niciun meci de eliminatorii la API.')
         return
 
+    scorers = knockout_scorers()
+
     lines = ['const KNOCKOUT = {']
     for i, key in enumerate(ORDER):
-        arr = ','.join(match_obj(m, fm) for m in buckets[key])
+        arr = ','.join(match_obj(m, fm, scorers) for m in buckets[key])
         comma = ',' if i < len(ORDER) - 1 else ''
         lines.append(f"  '{key}':[{arr}]{comma}")
     lines.append('};')
