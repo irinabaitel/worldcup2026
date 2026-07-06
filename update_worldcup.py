@@ -221,23 +221,14 @@ def add_highlight(html, m, vid):
     return html.replace('  // Optimi', entry + '  // Optimi', 1)
 
 
-def trigger_pages_build():
-    """GitHub Pages nu reconstruieste mereu automat dupa push -> il fortam."""
-    try:
-        subprocess.run(['gh', 'api', 'repos/irinabaitel/worldcup2026/pages/builds', '-X', 'POST'],
-                       check=True, capture_output=True)
-        print('Build GitHub Pages declansat manual.')
-    except Exception as e:
-        print(f'  (Nu am putut forta build-ul Pages, se face oricum automat de obicei: {e})')
-
-
 def git_push(msg):
     os.chdir(BASE)
     subprocess.run(['git', 'add', 'worldcup2026.html'], check=True)
     subprocess.run(['git', 'commit', '-m', msg], check=True)
     subprocess.run(['git', 'push'], check=True)
     print('Push GitHub reusit!')
-    trigger_pages_build()
+    # deploy-ul se face automat prin .github/workflows/deploy-pages.yml (build_type=workflow).
+    # (Fostul trigger_pages_build() lovea sistemul legacy - acum dezactivat - scos.)
 
 
 def main():
