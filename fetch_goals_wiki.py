@@ -4,7 +4,8 @@ Nu atinge meciurile care au deja marcatori."""
 import sys, os, re, json, time, subprocess, requests
 try: sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 except Exception: pass
-UA = {'User-Agent': 'WC2026-update/1.0 (irinabaitel; educational project)'}
+# UA conform politicii Wikimedia (nume + contact) -> mai putin blocat pe IP-uri partajate
+UA = {'User-Agent': 'WC2026-update/1.0 (https://irinabaitel.github.io/worldcup2026/; irinabaitel@gmail.com)'}
 BASE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(BASE, 'worldcup2026.html')
 
@@ -24,15 +25,17 @@ CODE2RO = {
 GROUPS = (os.environ.get('WC_GROUPS') or 'ABCDEFGHIJKL')
 
 def wikitext(page):
-    for attempt in range(3):
+    for attempt in range(5):                     # mai multe incercari (cloud e des rate-limitat)
         try:
             r = requests.get('https://en.wikipedia.org/w/api.php', headers=UA, timeout=25, params={
                 'action':'parse','page':page,'prop':'wikitext','format':'json','formatversion':'2'})
+            if r.status_code != 200:             # 429/403 etc. -> backoff mai lung
+                raise ValueError(f'HTTP {r.status_code}')
             j = r.json()
             return None if 'error' in j else j['parse']['wikitext']
         except Exception as e:
-            print(f'  (retry {page}: {e})')
-            time.sleep(2)
+            print(f'  (retry {attempt+1}/5 {page}: {e})')
+            time.sleep(3 * (attempt + 1))        # backoff crescator: 3,6,9,12s
     return None
 
 def parse_scorers(block):

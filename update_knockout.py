@@ -122,6 +122,25 @@ def knockout_scorers():
     return lookup
 
 
+def existing_scorers(html):
+    """FALLBACK: marcatorii deja scrisi in KNOCKOUT (din HTML). Wikipedia pica DES
+    din cloud (rate-limit pe IP GitHub Actions) -> daca knockout_scorers intoarce gol,
+    ii pastram pe astia ca sa NU-i stergem la o rulare esuata."""
+    lookup = {}
+    i = html.find('const KNOCKOUT')
+    if i < 0:
+        return lookup
+    end = html.find('\n};', i)
+    block = html[i:end] if end > 0 else html[i:i + 30000]
+    for mt in re.finditer(r"h:'([^']*)',\s*a:'([^']*)'[^{}]*?goals:\{h:(\[[^\]]*\]),a:(\[[^\]]*\])\}", block):
+        h, a = mt.group(1), mt.group(2)
+        gh = re.findall(r'"([^"]*)"', mt.group(3))
+        ga = re.findall(r'"([^"]*)"', mt.group(4))
+        if h and a and (gh or ga):
+            lookup[frozenset((h, a))] = {h: gh, a: ga}
+    return lookup
+
+
 def match_obj(m, fm, scorers):
     home = ro(m['homeTeam'].get('name'))
     away = ro(m['awayTeam'].get('name'))
@@ -185,6 +204,11 @@ def main():
     buckets['Șaisprezecimi'] = reorder_r32(buckets['Șaisprezecimi'], buckets['Optimi'])
 
     scorers = knockout_scorers()
+    # FALLBACK: pastreaza marcatorii deja din HTML pt meciurile pe care Wikipedia nu
+    # ni le-a dat acum (rate-limit din cloud) -> nu-i mai stergem la o rulare esuata
+    for k, v in existing_scorers(html).items():
+        if k not in scorers or not any(scorers[k].values()):
+            scorers[k] = v
 
     lines = ['const KNOCKOUT = {']
     for i, key in enumerate(ORDER):
