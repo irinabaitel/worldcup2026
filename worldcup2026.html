@@ -162,7 +162,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 /* ── BRACKET ELIMINATORII ── */
 #bracket{position:absolute;inset:0;background:#080f1e;overflow:auto;display:none;padding:20px 26px;z-index:5;-webkit-overflow-scrolling:touch;}
 #viewport.show-bracket #world{display:none;}
-#viewport.show-bracket #bracket{display:flex;align-items:flex-start;justify-content:flex-start;}
+#viewport.show-bracket #bracket{display:flex;align-items:safe center;justify-content:safe center;}
 .bracket-wrap{display:flex;min-width:max-content;min-height:100%;padding:6px 0;}
 .ko-round{display:flex;flex-direction:column;min-width:138px;}
 .side-left{margin-right:30px;}
@@ -253,7 +253,7 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 
   /* bracket pe telefon: derulare laterala cu degetul, fara taierea rundei din stanga
      (justify-content:center taie inceputul cand continutul e mai lat decat ecranul) */
-  #viewport.show-bracket #bracket{justify-content:flex-start;padding:14px;}
+  #viewport.show-bracket #bracket{justify-content:safe center;padding:10px;}
 }
 </style>
 </head>
@@ -628,7 +628,7 @@ function toggleBracket(){
   if(isMobile()) document.body.classList.remove('m-hl');   // arata zona grupe/bracket, nu highlights
   const on = vp.classList.toggle('show-bracket');
   document.getElementById('koBtn').textContent = on ? '⊙ Înapoi la grupe' : '🏆 Eliminatorii';
-  if(on) renderBracket();
+  if(on){ renderBracket(); requestAnimationFrame(fitBracket); }
 }
 
 // ─── DATE GRUPE ───────────────────────────────────────────────────────────────
@@ -970,16 +970,25 @@ window.addEventListener('mousemove',e=>{
 });
 window.addEventListener('mouseup',()=>{dragging=false;vp.style.cursor='';});
 
-// ─── SCROLL ZOOM ──────────────────────────────────────────────────────────────
+// ─── ZOOM BRACKET (rotita + pinch) + potrivire pe latime ──────────────────────
 let brZoom = 1;
+function setBrZoom(z){
+  brZoom = Math.max(0.2, Math.min(1.6, z));
+  const w = document.querySelector('.bracket-wrap');
+  if(w) w.style.zoom = brZoom;             // 'zoom' scaleaza si zona de scroll (nu 'transform')
+}
+function fitBracket(){                     // porneste potrivit pe latime -> vezi tot deodata
+  const w = document.querySelector('.bracket-wrap');
+  if(!w) return;
+  w.style.zoom = 1; brZoom = 1;
+  const avail = vp.clientWidth - 16, full = w.offsetWidth;
+  if(full > avail) setBrZoom(avail / full);
+}
 vp.addEventListener('wheel',e=>{
-  // pe BRACKET: rotita = zoom pe tot arborele (ca sa incapa tot deodata)
+  // pe BRACKET: rotita = zoom pe tot arborele
   if(vp.classList.contains('show-bracket')){
     e.preventDefault();
-    const wrap = document.querySelector('.bracket-wrap');
-    if(!wrap) return;
-    brZoom = Math.max(0.35, Math.min(1.4, brZoom * (e.deltaY<0 ? 1.1 : 1/1.1)));
-    wrap.style.zoom = brZoom;              // 'zoom' scaleaza si zona de scroll (nu 'transform')
+    setBrZoom(brZoom * (e.deltaY<0 ? 1.1 : 1/1.1));
     return;
   }
   // pe HARTA grupelor: zoom stil Prezi
@@ -992,6 +1001,23 @@ vp.addEventListener('wheel',e=>{
   world.style.transition='none';
   world.style.transform=`translate(${_tx}px,${_ty}px) scale(${_sc})`;
 },{passive:false});
+
+// pinch-zoom cu 2 degete pe bracket (telefon). 1 deget = scroll normal (nu-l blocam).
+let _pinch=0, _pinchZ=1;
+vp.addEventListener('touchstart',e=>{
+  if(vp.classList.contains('show-bracket') && e.touches.length===2){
+    _pinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+    _pinchZ=brZoom;
+  }
+},{passive:true});
+vp.addEventListener('touchmove',e=>{
+  if(vp.classList.contains('show-bracket') && e.touches.length===2 && _pinch){
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+    setBrZoom(_pinchZ * d/_pinch);
+    e.preventDefault();
+  }
+},{passive:false});
+vp.addEventListener('touchend',e=>{ if(e.touches.length<2) _pinch=0; });
 
 fitAll();
 
