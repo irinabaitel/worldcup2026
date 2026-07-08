@@ -204,12 +204,13 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .tier-4 .ko-round-title{color:#f0a850;}
 /* ── finala: mare, decalata la dreapta, cu cupa langa ea; loc 3 discret jos-stanga ── */
 .ko-final-round{position:relative;justify-content:center;min-width:180px;}
-.ko-final-cell{display:flex;align-items:center;justify-content:center;position:relative;}
-.ko-final-cell>.ko-match{width:auto;}
+.ko-final-cell{display:flex;align-items:center;justify-content:center;}
+.ko-final-inner{position:relative;}                 /* cat cardul -> cupa+stub-urile se leaga de card, nu de coloana */
+.ko-final-inner>.ko-match{width:auto;}
 /* stub-uri care intra in finala din ambele semifinale (stanga + dreapta) */
-.ko-final-cell>.ko-match::before{content:'';position:absolute;left:-15px;top:50%;transform:translateY(-50%);width:15px;height:2px;background:#34527e;}
-.ko-final-cell>.ko-match::after{content:'';position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:15px;height:2px;background:#34527e;}
-.ko-cup-img{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:10px;width:58px;filter:drop-shadow(0 0 12px #e8c84abb);}
+.ko-final-inner>.ko-match::before{content:'';position:absolute;left:-15px;top:50%;transform:translateY(-50%);width:15px;height:2px;background:#34527e;}
+.ko-final-inner>.ko-match::after{content:'';position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:15px;height:2px;background:#34527e;}
+.ko-cup-img{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:5px;width:48px;filter:drop-shadow(0 0 12px #e8c84abb);}
 .ko-big{border:2px solid #e8c84a !important;box-shadow:0 0 26px rgba(232,200,74,0.55) !important;min-width:172px;padding:8px 12px;background:linear-gradient(135deg,#1a2545,#0c1730) !important;}
 .ko-big .ko-row{font-size:0.85rem;padding:3px 0;}
 .ko-big .ko-sc{color:#ffd84a;}
@@ -582,10 +583,10 @@ function renderBracket(){
   html+=column('Semifinale',4,F,'left',false);
   // --- CENTRU: finala + cupa + loc 3 ---
   html+='<div class="ko-round ko-final-round"><div class="ko-round-title">Finala</div>';
-  html+='<div class="ko-cells"><div class="ko-cell ko-final-cell">';
+  html+='<div class="ko-cells"><div class="ko-cell ko-final-cell"><div class="ko-final-inner">';
   html+='<img class="ko-cup-img" src="cupa.png" alt="Cupa Mondială">';
   html+=koCard(finalM,{big:true,key:'Finala',idx:0});
-  html+='</div></div>';
+  html+='</div></div></div>';
   html+='<div class="ko-third"><div class="ko-final-label">Finala mică · loc 3</div>';
   html+='<div class="ko-third-row"><span class="ko-medal">🥉</span>'+koCard(thirdM,{small:true,key:'Finala mică',idx:0})+'</div></div>';
   html+='</div>';
