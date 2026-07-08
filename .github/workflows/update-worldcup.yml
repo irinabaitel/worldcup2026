@@ -3,10 +3,13 @@ name: Update World Cup
 # Ruleaza in cloud-ul GitHub, NU pe laptopul Irinei.
 on:
   schedule:
-    # de 2x pe ora, pe minute "de liniste" (NU la :00, cand GitHub e aglomerat si
-    # intarzie/sare rularile). Doua intrari = redundanta daca GitHub sare una.
-    - cron: '17 * * * *'
-    - cron: '47 * * * *'
+    # de 4x pe ora, pe minute "de liniste" (NU la :00/:15/:30/:45, unde GitHub e
+    # aglomerat si intarzie/sare rularile). Mai multe intrari = chiar daca GitHub
+    # sare cateva, gap-ul ramane sub ~1h.
+    - cron: '8 * * * *'
+    - cron: '23 * * * *'
+    - cron: '38 * * * *'
+    - cron: '53 * * * *'
   workflow_dispatch:           # buton de rulare manuala (din tab-ul Actions)
 
 permissions:
