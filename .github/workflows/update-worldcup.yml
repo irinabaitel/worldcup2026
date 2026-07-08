@@ -3,13 +3,15 @@ name: Update World Cup
 # Ruleaza in cloud-ul GitHub, NU pe laptopul Irinei.
 on:
   schedule:
-    # de 4x pe ora, pe minute "de liniste" (NU la :00/:15/:30/:45, unde GitHub e
-    # aglomerat si intarzie/sare rularile). Mai multe intrari = chiar daca GitHub
-    # sare cateva, gap-ul ramane sub ~1h.
-    - cron: '8 * * * *'
-    - cron: '23 * * * *'
-    - cron: '38 * * * *'
-    - cron: '53 * * * *'
+    # Program "inteligent" (ore UTC). Meciurile in SUA/Canada/Mexic sunt ~16:00-04:00
+    # UTC; AntenaPLAY posteaza rezumatele cu cateva ore intarziere.
+    # Minute "de liniste" (NU :00/:15/:30/:45 unde GitHub e aglomerat si sare rularile).
+    #
+    # ACTIV (~4x/ora): 15:00-23:59 si 00:00-06:59 UTC = seara/noaptea la noi (se joaca)
+    - cron: '8,23,38,53 15-23 * * *'
+    - cron: '8,23,38,53 0-6 * * *'
+    # LINISTIT (1x/ora la :08): 07:00-14:59 UTC = ziua la noi / noaptea in Americi (pauza)
+    - cron: '8 7-14 * * *'
   workflow_dispatch:           # buton de rulare manuala (din tab-ul Actions)
 
 permissions:
