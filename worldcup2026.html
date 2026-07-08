@@ -969,7 +969,18 @@ window.addEventListener('mousemove',e=>{
 window.addEventListener('mouseup',()=>{dragging=false;vp.style.cursor='';});
 
 // ─── SCROLL ZOOM ──────────────────────────────────────────────────────────────
+let brZoom = 1;
 vp.addEventListener('wheel',e=>{
+  // pe BRACKET: rotita = zoom pe tot arborele (ca sa incapa tot deodata)
+  if(vp.classList.contains('show-bracket')){
+    e.preventDefault();
+    const wrap = document.querySelector('.bracket-wrap');
+    if(!wrap) return;
+    brZoom = Math.max(0.35, Math.min(1.4, brZoom * (e.deltaY<0 ? 1.1 : 1/1.1)));
+    wrap.style.zoom = brZoom;              // 'zoom' scaleaza si zona de scroll (nu 'transform')
+    return;
+  }
+  // pe HARTA grupelor: zoom stil Prezi
   e.preventDefault();
   const factor=e.deltaY<0?1.12:1/1.12;
   const newSc=Math.max(0.12,Math.min(8,_sc*factor));
