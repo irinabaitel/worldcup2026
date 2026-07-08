@@ -10,8 +10,9 @@ on:
   workflow_dispatch:           # buton de rulare manuala (din tab-ul Actions)
 
 permissions:
-  contents: write              # ca sa poata face commit/push
-  pages: write                 # ca sa poata reconstrui pagina
+  contents: write              # commit/push
+  pages: write                 # publicare Pages
+  id-token: write              # necesar pentru actions/deploy-pages
 
 concurrency:
   group: update-worldcup
@@ -20,6 +21,9 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -48,3 +52,15 @@ jobs:
         env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
         run: python update_knockout.py
+
+      # --- PUBLICARE in ACEEASI rulare ---
+      # Un push facut de workflow (GITHUB_TOKEN) NU declanseaza alt workflow
+      # (anti-recursie), deci deploy-pages.yml nu pornea din cloud -> site inghetat.
+      # Deci publicam aici, dupa ce scripturile au comis modificarile.
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - name: Publica pe GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
