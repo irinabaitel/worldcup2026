@@ -165,15 +165,22 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 #viewport.show-bracket #bracket{display:flex;align-items:flex-start;justify-content:center;}
 .bracket-wrap{display:flex;min-width:max-content;min-height:100%;padding:6px 0;}
 .ko-round{display:flex;flex-direction:column;min-width:172px;}
-.ko-round:not(:last-child){margin-right:30px;}
+.side-left{margin-right:30px;}
+.side-right{margin-left:30px;}
 .ko-round-title{font-size:0.66rem;color:#e8c84a;letter-spacing:1.2px;text-align:center;margin-bottom:10px;text-transform:uppercase;font-weight:700;flex-shrink:0;white-space:nowrap;}
 .ko-cells{flex:1;display:flex;flex-direction:column;}
 .ko-cell{flex:1;display:flex;align-items:center;position:relative;}
 .ko-cell>.ko-match{width:100%;}
-/* ── conectoare arbore (orizontale + verticale) ── */
-.ko-round:not(:last-child) .ko-cell::after{content:'';position:absolute;left:100%;top:50%;transform:translateY(-50%);width:17px;height:2px;background:#34527e;}
-.ko-round:not(:last-child) .ko-cells>.ko-cell:nth-child(odd)::before{content:'';position:absolute;left:calc(100% + 15px);top:calc(50% - 1px);width:2px;height:calc(100% + 2px);background:#34527e;}
-.ko-round:not(:first-child) .ko-cell>.ko-match::before{content:'';position:absolute;left:-15px;top:50%;transform:translateY(-50%);width:15px;height:2px;background:#34527e;}
+/* ── conectoare arbore — STANGA spre centru(dreapta), DREAPTA spre centru(stanga) ── */
+/* stub orizontal care iese din fiecare meci spre centru */
+.side-left  .ko-cell::after{content:'';position:absolute;left:100%; top:50%;transform:translateY(-50%);width:17px;height:2px;background:#34527e;}
+.side-right .ko-cell::after{content:'';position:absolute;right:100%;top:50%;transform:translateY(-50%);width:17px;height:2px;background:#34527e;}
+/* bara verticala care uneste o pereche (doar rundele cu perechi) */
+.side-left.ko-pairs  .ko-cells>.ko-cell:nth-child(odd)::before{content:'';position:absolute;left:calc(100% + 15px); top:calc(50% - 1px);width:2px;height:calc(100% + 2px);background:#34527e;}
+.side-right.ko-pairs .ko-cells>.ko-cell:nth-child(odd)::before{content:'';position:absolute;right:calc(100% + 15px);top:calc(50% - 1px);width:2px;height:calc(100% + 2px);background:#34527e;}
+/* stub orizontal care intra in meciul rundei urmatoare (nu pe 16imi exterioare) */
+.side-left:not(.ko-outer)  .ko-cell>.ko-match::before{content:'';position:absolute;left:-15px; top:50%;transform:translateY(-50%);width:15px;height:2px;background:#34527e;}
+.side-right:not(.ko-outer) .ko-cell>.ko-match::before{content:'';position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:15px;height:2px;background:#34527e;}
 .ko-match{background:linear-gradient(135deg,#0d1e3a,#0a1628);border:1px solid #1e3a6e;border-radius:8px;padding:5px 8px;position:relative;}
 .ko-match.empty{opacity:0.45;border-style:dashed;}
 .ko-row{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:2px 0;font-size:0.74rem;color:#cde0fb;}
@@ -191,19 +198,22 @@ body{background:#080f1e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;overflow
 .ko-t2{border-color:#2aa0a0;box-shadow:0 0 8px rgba(42,185,185,0.22);}
 .ko-t3{border-color:#3ac070;box-shadow:0 0 11px rgba(60,200,120,0.30);}
 .ko-t4{border-color:#e0922a;box-shadow:0 0 15px rgba(230,150,40,0.38);}
-.bracket-wrap>.ko-round:nth-child(1) .ko-round-title{color:#5a9ad8;}
-.bracket-wrap>.ko-round:nth-child(2) .ko-round-title{color:#3ad0d0;}
-.bracket-wrap>.ko-round:nth-child(3) .ko-round-title{color:#4ad888;}
-.bracket-wrap>.ko-round:nth-child(4) .ko-round-title{color:#f0a850;}
+.tier-1 .ko-round-title{color:#5a9ad8;}
+.tier-2 .ko-round-title{color:#3ad0d0;}
+.tier-3 .ko-round-title{color:#4ad888;}
+.tier-4 .ko-round-title{color:#f0a850;}
 /* ── finala: mare, decalata la dreapta, cu cupa langa ea; loc 3 discret jos-stanga ── */
-.ko-final-round{position:relative;justify-content:center;}
-.ko-final-cell{display:flex;align-items:center;gap:12px;margin-left:185px;}
+.ko-final-round{position:relative;justify-content:center;min-width:180px;}
+.ko-final-cell{display:flex;align-items:center;justify-content:center;position:relative;}
 .ko-final-cell>.ko-match{width:auto;}
-.ko-cup-img{width:54px;flex-shrink:0;filter:drop-shadow(0 0 12px #e8c84abb);}
+/* stub-uri care intra in finala din ambele semifinale (stanga + dreapta) */
+.ko-final-cell>.ko-match::before{content:'';position:absolute;left:-15px;top:50%;transform:translateY(-50%);width:15px;height:2px;background:#34527e;}
+.ko-final-cell>.ko-match::after{content:'';position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:15px;height:2px;background:#34527e;}
+.ko-cup-img{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:10px;width:58px;filter:drop-shadow(0 0 12px #e8c84abb);}
 .ko-big{border:2px solid #e8c84a !important;box-shadow:0 0 26px rgba(232,200,74,0.55) !important;min-width:172px;padding:8px 12px;background:linear-gradient(135deg,#1a2545,#0c1730) !important;}
 .ko-big .ko-row{font-size:0.85rem;padding:3px 0;}
 .ko-big .ko-sc{color:#ffd84a;}
-.ko-third{position:absolute;top:50%;transform:translateY(calc(-50% + 72px));left:0;}
+.ko-third{position:absolute;left:50%;top:calc(50% + 70px);transform:translateX(-50%);white-space:nowrap;}
 .ko-third-row{display:flex;align-items:center;gap:8px;}
 .ko-final-label{font-size:0.56rem;color:#9aa0ae;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;text-align:center;}
 .ko-small-final{min-width:150px;border:2px solid #c8ccd6 !important;box-shadow:0 0 13px rgba(200,205,220,0.45) !important;background:linear-gradient(135deg,#1a2230,#0c1424) !important;}
@@ -547,26 +557,41 @@ function koCard(m, opts){
 }
 
 function renderBracket(){
-  let html = '<div class="bracket-wrap">';
-  KO_STRUCTURE.forEach((r,ri)=>{
-    const real = KNOCKOUT[r.key] || [];
-    const arr = real.length ? real : Array.from({length:r.n}, ()=>null);
-    html += `<div class="ko-round"><div class="ko-round-title">${r.key}</div><div class="ko-cells">`;
-    arr.forEach((m,i)=>{ html += `<div class="ko-cell">${koCard(m,{key:r.key,idx:i,tier:ri+1})}</div>`; });
-    html += `</div></div>`;
-  });
-  // Coloana finala: finala mare cu cupa langa ea + finala mica (loc 3) discreta jos-stanga
-  const finalM = (KNOCKOUT['Finala']||[])[0] || null;
-  const thirdM = (KNOCKOUT['Finala mică']||[])[0] || null;
-  html += '<div class="ko-round ko-final-round"><div class="ko-round-title">Finala</div>';
-  html += '<div class="ko-cells"><div class="ko-cell ko-final-cell">';
-  html += koCard(finalM, {big:true, key:'Finala', idx:0});
-  html += '<img class="ko-cup-img" src="cupa.png" alt="Cupa Mondială">';
-  html += '</div></div>';
-  html += '<div class="ko-third"><div class="ko-final-label">Finala mică · loc 3</div>';
-  html += '<div class="ko-third-row">' + koCard(thirdM, {small:true, key:'Finala mică', idx:0}) + '<span class="ko-medal">🥉</span></div>';
-  html += '</div></div>';
-  document.getElementById('bracket').innerHTML = html;
+  // bracket "TV" pe DOUA parti: jumatatea 1 din stanga -> finala (centru) <- jumatatea 2 din dreapta
+  const arrOf = (key,n)=>{ const r=KNOCKOUT[key]||[]; return r.length?r:Array.from({length:n},()=>null); };
+  // o coloana (o runda, o jumatate): side='left'|'right', outer=runda exterioara (16imi)
+  const column = (key,tier,arr,side,outer)=>{
+    const n=arr.length, start = side==='left'?0:n/2, part = side==='left'?arr.slice(0,n/2):arr.slice(n/2);
+    const cls = `ko-round side-${side} tier-${tier}` + (part.length>1?' ko-pairs':'') + (outer?' ko-outer':'');
+    let h=`<div class="${cls}"><div class="ko-round-title">${key}</div><div class="ko-cells">`;
+    part.forEach((m,i)=>{ h+=`<div class="ko-cell">${koCard(m,{key,idx:start+i,tier})}</div>`; });
+    return h+'</div></div>';
+  };
+  const S=arrOf('Șaisprezecimi',16), O=arrOf('Optimi',8), Q=arrOf('Sferturi',4), F=arrOf('Semifinale',2);
+  const finalM=(KNOCKOUT['Finala']||[])[0]||null, thirdM=(KNOCKOUT['Finala mică']||[])[0]||null;
+
+  let html='<div class="bracket-wrap">';
+  // --- STANGA (exterior -> interior) ---
+  html+=column('Șaisprezecimi',1,S,'left',true);
+  html+=column('Optimi',2,O,'left',false);
+  html+=column('Sferturi',3,Q,'left',false);
+  html+=column('Semifinale',4,F,'left',false);
+  // --- CENTRU: finala + cupa + loc 3 ---
+  html+='<div class="ko-round ko-final-round"><div class="ko-round-title">Finala</div>';
+  html+='<div class="ko-cells"><div class="ko-cell ko-final-cell">';
+  html+='<img class="ko-cup-img" src="cupa.png" alt="Cupa Mondială">';
+  html+=koCard(finalM,{big:true,key:'Finala',idx:0});
+  html+='</div></div>';
+  html+='<div class="ko-third"><div class="ko-final-label">Finala mică · loc 3</div>';
+  html+='<div class="ko-third-row"><span class="ko-medal">🥉</span>'+koCard(thirdM,{small:true,key:'Finala mică',idx:0})+'</div></div>';
+  html+='</div>';
+  // --- DREAPTA (interior -> exterior, oglindit) ---
+  html+=column('Semifinale',4,F,'right',false);
+  html+=column('Sferturi',3,Q,'right',false);
+  html+=column('Optimi',2,O,'right',false);
+  html+=column('Șaisprezecimi',1,S,'right',true);
+  html+='</div>';
+  document.getElementById('bracket').innerHTML=html;
 }
 
 function showKoGoals(e, key, idx){
