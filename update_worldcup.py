@@ -182,6 +182,30 @@ def _team_in_title(team, ntitle):
     return any(f and f in ntitle for f in frags)
 
 
+ANTENA_CHANNEL_ID = 'UCNfr6TY2vaO7QFIboIgqN-Q'   # canalul AntenaPLAY
+_antena_rss = None
+
+def antena_uploads():
+    """(titlu_normalizat, videoId) din feed-ul RSS al canalului AntenaPLAY (ultimele ~15
+    uploaduri). RSS = XML STATIC, independent de IP/ranking -> merge si din cloud (SUA),
+    unde cautarea generala YouTube NU scoate clipurile romanesti (le rankeaza prea jos)."""
+    global _antena_rss
+    if _antena_rss is not None:
+        return _antena_rss
+    _antena_rss = []
+    try:
+        r = requests.get(f'https://www.youtube.com/feeds/videos.xml?channel_id={ANTENA_CHANNEL_ID}',
+                         headers={'User-Agent': 'Mozilla/5.0', 'Accept-Language': 'ro-RO,ro;q=0.9'}, timeout=15)
+        for entry in r.text.split('<entry>')[1:]:
+            vid = re.search(r'<yt:videoId>([a-zA-Z0-9_-]{11})</yt:videoId>', entry)
+            ti = re.search(r'<title>([^<]*)</title>', entry)
+            if vid and ti:
+                _antena_rss.append((_norm(ti.group(1)), vid.group(1)))
+    except Exception as e:
+        print(f'  RSS AntenaPLAY error: {e}')
+    return _antena_rss
+
+
 def search_youtube(home, away, hg, ag):
     """Cauta rezumatul de pe canalul AntenaPLAY.
     AntenaPLAY scrie deseori echipele in ordine INVERSATA si cu nume diferite
@@ -189,10 +213,13 @@ def search_youtube(home, away, hg, ag):
     aceea citim canal+titlu direct din pagina de cautare si potrivim pe titlul
     normalizat: canal AntenaPLAY + contine 'rezumat' + AMBELE echipe (orice ordine).
     Cerinta 'ambele + rezumat' exclude clipurile gresite ('Golurile Zilei...' sau
-    alt meci care contine doar o echipa comuna). NU folosim filtru de durata
-    (ascundea clipuri valide); titlul 'Rezumat: A - B' garanteaza format lung."""
-    # gl=RO/hl=ro + Accept-Language RO -> YouTube da rezultate ROMANESTI (AntenaPLAY)
-    # chiar si de pe IP-uri din SUA (cloud GitHub); altfel primeste rezultate US si rateaza.
+    alt meci care contine doar o echipa comuna)."""
+    # 1) FEED RSS al canalului AntenaPLAY -> fiabil din cloud (independent de IP)
+    for ntitle, vid in antena_uploads():
+        if 'rezumat' in ntitle and _team_in_title(home, ntitle) and _team_in_title(away, ntitle):
+            return vid
+    # 2) FALLBACK: cautarea generala YouTube (merge de pe IP RO; din cloud rateaza clipurile RO)
+    # gl=RO/hl=ro + Accept-Language RO -> pagina in romana (dar ranking-ul ramane US)
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                'Accept-Language': 'ro-RO,ro;q=0.9'}
     query = f'Rezumat {home} {away} Campionatul Mondial 2026'
