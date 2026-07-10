@@ -202,7 +202,7 @@ def search_youtube(home, away, hg, ag):
     except Exception as e:
         print(f'  YouTube search error: {e}')
         return None
-    for b in r.text.split('"videoRenderer"')[1:13]:
+    for b in r.text.split('"videoRenderer"')[1:]:   # TOATE rezultatele (din SUA, AntenaPLAY apare mai jos in lista)
         mid = re.search(r'"videoId":"([a-zA-Z0-9_-]{11})"', b)
         ch = re.search(r'"(?:ownerText|longBylineText)":\{"runs":\[\{"text":"([^"]+)"', b)
         ti = re.search(r'"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"', b)
