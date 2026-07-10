@@ -191,9 +191,12 @@ def search_youtube(home, away, hg, ag):
     Cerinta 'ambele + rezumat' exclude clipurile gresite ('Golurile Zilei...' sau
     alt meci care contine doar o echipa comuna). NU folosim filtru de durata
     (ascundea clipuri valide); titlul 'Rezumat: A - B' garanteaza format lung."""
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    # gl=RO/hl=ro + Accept-Language RO -> YouTube da rezultate ROMANESTI (AntenaPLAY)
+    # chiar si de pe IP-uri din SUA (cloud GitHub); altfel primeste rezultate US si rateaza.
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+               'Accept-Language': 'ro-RO,ro;q=0.9'}
     query = f'Rezumat {home} {away} Campionatul Mondial 2026'
-    url = f'https://www.youtube.com/results?search_query={requests.utils.quote(query)}'
+    url = f'https://www.youtube.com/results?search_query={requests.utils.quote(query)}&gl=RO&hl=ro'
     try:
         r = requests.get(url, headers=headers, timeout=15)
     except Exception as e:
