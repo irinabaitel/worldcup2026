@@ -21,3 +21,8 @@ highlights/
 node_modules/
 plati_sah.html
 __pycache__/
+
+# scripturi de test/one-off locale
+backfill_highlights.py
+reverify.py
+test_*.py
